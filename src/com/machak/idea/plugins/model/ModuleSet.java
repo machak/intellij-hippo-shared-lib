@@ -1,24 +1,16 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,22 +18,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- * 
- *         A moduleSet represent one or more project &lt;module&gt; present inside
- *         a project's pom.xml. This allows you to include sources or binaries
- *         belonging to a project's &lt;modules&gt;.
- * 
- *         <br/><b>NOTE:</b> When using &lt;moduleSets&gt; from the command-line, it
- *         is required to pass first the package phase by doing: "mvn package
- *         assembly:assembly". This bug/issue is scheduled to be addressed by Maven 2.1.
- * 
- *       
- * 
+ * A moduleSet represent one or more project &lt;module&gt; present inside
+ * a project's pom.xml. This allows you to include sources or binaries
+ * belonging to a project's &lt;modules&gt;.
+ * <p/>
+ * <br/><b>NOTE:</b> When using &lt;moduleSets&gt; from the command-line, it
+ * is required to pass first the package phase by doing: "mvn package
+ * assembly:assembly". This bug/issue is scheduled to be addressed by Maven 2.1.
+ * <p/>
+ * <p/>
+ * <p/>
  * <p>Java class for ModuleSet complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="ModuleSet">
  *   &lt;complexContent>
@@ -78,8 +68,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ModuleSet", namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", propOrder = {
@@ -102,11 +90,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the useAllReactorProjects property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseAllReactorProjects() {
         return useAllReactorProjects;
@@ -114,11 +100,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the useAllReactorProjects property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseAllReactorProjects(Boolean value) {
         this.useAllReactorProjects = value;
@@ -126,11 +110,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the includeSubModules property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isIncludeSubModules() {
         return includeSubModules;
@@ -138,11 +120,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the includeSubModules property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setIncludeSubModules(Boolean value) {
         this.includeSubModules = value;
@@ -150,11 +130,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the includes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSet.Includes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSet.Includes }
      */
     public ModuleSet.Includes getIncludes() {
         return includes;
@@ -162,11 +140,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the includes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSet.Includes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSet.Includes }
      */
     public void setIncludes(ModuleSet.Includes value) {
         this.includes = value;
@@ -174,11 +150,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the excludes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSet.Excludes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSet.Excludes }
      */
     public ModuleSet.Excludes getExcludes() {
         return excludes;
@@ -186,11 +160,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the excludes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSet.Excludes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSet.Excludes }
      */
     public void setExcludes(ModuleSet.Excludes value) {
         this.excludes = value;
@@ -198,11 +170,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the sources property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSources }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSources }
      */
     public ModuleSources getSources() {
         return sources;
@@ -210,11 +180,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the sources property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSources }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSources }
      */
     public void setSources(ModuleSources value) {
         this.sources = value;
@@ -222,11 +190,9 @@ public class ModuleSet {
 
     /**
      * Gets the value of the binaries property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleBinaries }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleBinaries }
      */
     public ModuleBinaries getBinaries() {
         return binaries;
@@ -234,11 +200,9 @@ public class ModuleSet {
 
     /**
      * Sets the value of the binaries property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleBinaries }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleBinaries }
      */
     public void setBinaries(ModuleBinaries value) {
         this.binaries = value;
@@ -247,9 +211,9 @@ public class ModuleSet {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -261,12 +225,10 @@ public class ModuleSet {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "exclude"
+            "exclude"
     })
     public static class Excludes {
 
@@ -275,25 +237,23 @@ public class ModuleSet {
 
         /**
          * Gets the value of the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getExclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getExclude() {
             if (exclude == null) {
@@ -307,9 +267,9 @@ public class ModuleSet {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -321,12 +281,10 @@ public class ModuleSet {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "include"
+            "include"
     })
     public static class Includes {
 
@@ -335,25 +293,23 @@ public class ModuleSet {
 
         /**
          * Gets the value of the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getInclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getInclude() {
             if (include == null) {

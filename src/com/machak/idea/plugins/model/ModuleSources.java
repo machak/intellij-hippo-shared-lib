@@ -1,24 +1,16 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,15 +18,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *         Contains configuration options for including the source files of a
- *         project module in an assembly.
- *       
- * 
+ * Contains configuration options for including the source files of a
+ * project module in an assembly.
+ * <p/>
+ * <p/>
  * <p>Java class for ModuleSources complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="ModuleSources">
  *   &lt;complexContent>
@@ -85,8 +76,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ModuleSources", namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", propOrder = {
@@ -117,11 +106,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the useDefaultExcludes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseDefaultExcludes() {
         return useDefaultExcludes;
@@ -129,11 +116,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the useDefaultExcludes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseDefaultExcludes(Boolean value) {
         this.useDefaultExcludes = value;
@@ -141,11 +126,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the outputDirectory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputDirectory() {
         return outputDirectory;
@@ -153,11 +136,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the outputDirectory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputDirectory(String value) {
         this.outputDirectory = value;
@@ -165,11 +146,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the includes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSources.Includes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSources.Includes }
      */
     public ModuleSources.Includes getIncludes() {
         return includes;
@@ -177,11 +156,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the includes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSources.Includes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSources.Includes }
      */
     public void setIncludes(ModuleSources.Includes value) {
         this.includes = value;
@@ -189,11 +166,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the excludes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSources.Excludes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSources.Excludes }
      */
     public ModuleSources.Excludes getExcludes() {
         return excludes;
@@ -201,11 +176,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the excludes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSources.Excludes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSources.Excludes }
      */
     public void setExcludes(ModuleSources.Excludes value) {
         this.excludes = value;
@@ -213,11 +186,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the fileMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getFileMode() {
         return fileMode;
@@ -225,11 +196,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the fileMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFileMode(String value) {
         this.fileMode = value;
@@ -237,11 +206,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the directoryMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDirectoryMode() {
         return directoryMode;
@@ -249,11 +216,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the directoryMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDirectoryMode(String value) {
         this.directoryMode = value;
@@ -261,11 +226,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the fileSets property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleSources.FileSets }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleSources.FileSets }
      */
     public ModuleSources.FileSets getFileSets() {
         return fileSets;
@@ -273,11 +236,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the fileSets property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleSources.FileSets }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleSources.FileSets }
      */
     public void setFileSets(ModuleSources.FileSets value) {
         this.fileSets = value;
@@ -285,11 +246,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the includeModuleDirectory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isIncludeModuleDirectory() {
         return includeModuleDirectory;
@@ -297,11 +256,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the includeModuleDirectory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setIncludeModuleDirectory(Boolean value) {
         this.includeModuleDirectory = value;
@@ -309,11 +266,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the excludeSubModuleDirectories property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isExcludeSubModuleDirectories() {
         return excludeSubModuleDirectories;
@@ -321,11 +276,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the excludeSubModuleDirectories property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setExcludeSubModuleDirectories(Boolean value) {
         this.excludeSubModuleDirectories = value;
@@ -333,11 +286,9 @@ public class ModuleSources {
 
     /**
      * Gets the value of the outputDirectoryMapping property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputDirectoryMapping() {
         return outputDirectoryMapping;
@@ -345,11 +296,9 @@ public class ModuleSources {
 
     /**
      * Sets the value of the outputDirectoryMapping property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputDirectoryMapping(String value) {
         this.outputDirectoryMapping = value;
@@ -358,9 +307,9 @@ public class ModuleSources {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -372,12 +321,10 @@ public class ModuleSources {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "exclude"
+            "exclude"
     })
     public static class Excludes {
 
@@ -386,25 +333,23 @@ public class ModuleSources {
 
         /**
          * Gets the value of the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getExclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getExclude() {
             if (exclude == null) {
@@ -418,9 +363,9 @@ public class ModuleSources {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -432,12 +377,10 @@ public class ModuleSources {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "fileSet"
+            "fileSet"
     })
     public static class FileSets {
 
@@ -446,25 +389,23 @@ public class ModuleSources {
 
         /**
          * Gets the value of the fileSet property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the fileSet property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getFileSet().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link FileSet }
-         * 
-         * 
          */
         public List<FileSet> getFileSet() {
             if (fileSet == null) {
@@ -478,9 +419,9 @@ public class ModuleSources {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -492,12 +433,10 @@ public class ModuleSources {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "include"
+            "include"
     })
     public static class Includes {
 
@@ -506,25 +445,23 @@ public class ModuleSources {
 
         /**
          * Gets the value of the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getInclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getInclude() {
             if (include == null) {

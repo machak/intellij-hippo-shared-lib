@@ -1,3 +1,8 @@
+<!--
+  Copyright 2013 m.milicevic (http://www.machak.com)
+  http://www.apache.org/licenses/LICENSE-2.0
+  -->
+
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
@@ -23,7 +28,6 @@
   -->
 
 
-
   <application-components>
     <component>
       <implementation-class>com.machak.idea.plugins.config.ApplicationComponent</implementation-class>
@@ -42,7 +46,7 @@
     </action>
   </actions>
 
-<!--  <extensions defaultExtensionNs="com.intellij">
-    <projectConfigurable id="HippoSharedLibsProjectConfigurable" instance="com.machak.idea.plugins.config.ApplicationComponent"/>
-  </extensions>-->
+  <!--  <extensions defaultExtensionNs="com.intellij">
+      <projectConfigurable id="HippoSharedLibsProjectConfigurable" instance="com.machak.idea.plugins.config.ApplicationComponent"/>
+    </extensions>-->
 </idea-plugin>

@@ -1,24 +1,16 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,15 +18,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *         Contains configuration options for including the binary files of a
- *         project module in an assembly.
- *       
- * 
+ * Contains configuration options for including the binary files of a
+ * project module in an assembly.
+ * <p/>
+ * <p/>
  * <p>Java class for ModuleBinaries complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="ModuleBinaries">
  *   &lt;complexContent>
@@ -86,8 +77,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ModuleBinaries", namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", propOrder = {
@@ -120,11 +109,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the outputDirectory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputDirectory() {
         return outputDirectory;
@@ -132,11 +119,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the outputDirectory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputDirectory(String value) {
         this.outputDirectory = value;
@@ -144,11 +129,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the includes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleBinaries.Includes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleBinaries.Includes }
      */
     public ModuleBinaries.Includes getIncludes() {
         return includes;
@@ -156,11 +139,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the includes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleBinaries.Includes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleBinaries.Includes }
      */
     public void setIncludes(ModuleBinaries.Includes value) {
         this.includes = value;
@@ -168,11 +149,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the excludes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleBinaries.Excludes }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleBinaries.Excludes }
      */
     public ModuleBinaries.Excludes getExcludes() {
         return excludes;
@@ -180,11 +159,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the excludes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleBinaries.Excludes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleBinaries.Excludes }
      */
     public void setExcludes(ModuleBinaries.Excludes value) {
         this.excludes = value;
@@ -192,11 +169,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the fileMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getFileMode() {
         return fileMode;
@@ -204,11 +179,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the fileMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFileMode(String value) {
         this.fileMode = value;
@@ -216,11 +189,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the directoryMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDirectoryMode() {
         return directoryMode;
@@ -228,11 +199,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the directoryMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDirectoryMode(String value) {
         this.directoryMode = value;
@@ -240,11 +209,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the attachmentClassifier property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getAttachmentClassifier() {
         return attachmentClassifier;
@@ -252,11 +219,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the attachmentClassifier property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAttachmentClassifier(String value) {
         this.attachmentClassifier = value;
@@ -264,11 +229,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the includeDependencies property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isIncludeDependencies() {
         return includeDependencies;
@@ -276,11 +239,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the includeDependencies property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setIncludeDependencies(Boolean value) {
         this.includeDependencies = value;
@@ -288,11 +249,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the dependencySets property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ModuleBinaries.DependencySets }
-     *     
+     *
+     * @return possible object is
+     *         {@link ModuleBinaries.DependencySets }
      */
     public ModuleBinaries.DependencySets getDependencySets() {
         return dependencySets;
@@ -300,11 +259,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the dependencySets property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ModuleBinaries.DependencySets }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ModuleBinaries.DependencySets }
      */
     public void setDependencySets(ModuleBinaries.DependencySets value) {
         this.dependencySets = value;
@@ -312,11 +269,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the unpack property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUnpack() {
         return unpack;
@@ -324,11 +279,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the unpack property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUnpack(Boolean value) {
         this.unpack = value;
@@ -336,11 +289,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the unpackOptions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link UnpackOptions }
-     *     
+     *
+     * @return possible object is
+     *         {@link UnpackOptions }
      */
     public UnpackOptions getUnpackOptions() {
         return unpackOptions;
@@ -348,11 +299,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the unpackOptions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link UnpackOptions }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link UnpackOptions }
      */
     public void setUnpackOptions(UnpackOptions value) {
         this.unpackOptions = value;
@@ -360,11 +309,9 @@ public class ModuleBinaries {
 
     /**
      * Gets the value of the outputFileNameMapping property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputFileNameMapping() {
         return outputFileNameMapping;
@@ -372,11 +319,9 @@ public class ModuleBinaries {
 
     /**
      * Sets the value of the outputFileNameMapping property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputFileNameMapping(String value) {
         this.outputFileNameMapping = value;
@@ -385,9 +330,9 @@ public class ModuleBinaries {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -399,12 +344,10 @@ public class ModuleBinaries {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "dependencySet"
+            "dependencySet"
     })
     public static class DependencySets {
 
@@ -413,25 +356,23 @@ public class ModuleBinaries {
 
         /**
          * Gets the value of the dependencySet property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the dependencySet property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getDependencySet().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link DependencySet }
-         * 
-         * 
          */
         public List<DependencySet> getDependencySet() {
             if (dependencySet == null) {
@@ -445,9 +386,9 @@ public class ModuleBinaries {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -459,12 +400,10 @@ public class ModuleBinaries {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "exclude"
+            "exclude"
     })
     public static class Excludes {
 
@@ -473,25 +412,23 @@ public class ModuleBinaries {
 
         /**
          * Gets the value of the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getExclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getExclude() {
             if (exclude == null) {
@@ -505,9 +442,9 @@ public class ModuleBinaries {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -519,12 +456,10 @@ public class ModuleBinaries {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "include"
+            "include"
     })
     public static class Includes {
 
@@ -533,25 +468,23 @@ public class ModuleBinaries {
 
         /**
          * Gets the value of the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getInclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getInclude() {
             if (include == null) {

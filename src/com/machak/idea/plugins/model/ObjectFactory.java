@@ -1,18 +1,9 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
@@ -24,18 +15,17 @@ import javax.xml.namespace.QName;
 
 
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the org.onehippo.integration package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
+ * This object contains factory methods for each
+ * Java content interface and Java element interface
+ * generated in the org.onehippo.integration package.
+ * <p>An ObjectFactory allows you to programatically
+ * construct new instances of the Java representation
+ * for XML content. The Java representation of XML
+ * content can consist of schema derived interfaces
+ * and classes representing the binding of schema
+ * type definitions, element declarations and model
+ * groups.  Factory methods for each of these are
  * provided in this class.
- * 
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -44,14 +34,12 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onehippo.integration
-     * 
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link ModuleBinaries }
-     * 
      */
     public ModuleBinaries createModuleBinaries() {
         return new ModuleBinaries();
@@ -59,7 +47,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSet }
-     * 
      */
     public ModuleSet createModuleSet() {
         return new ModuleSet();
@@ -67,7 +54,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ContainerDescriptorHandlerConfig }
-     * 
      */
     public ContainerDescriptorHandlerConfig createContainerDescriptorHandlerConfig() {
         return new ContainerDescriptorHandlerConfig();
@@ -75,7 +61,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DependencySet }
-     * 
      */
     public DependencySet createDependencySet() {
         return new DependencySet();
@@ -83,7 +68,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link UnpackOptions }
-     * 
      */
     public UnpackOptions createUnpackOptions() {
         return new UnpackOptions();
@@ -91,7 +75,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GroupVersionAlignment }
-     * 
      */
     public GroupVersionAlignment createGroupVersionAlignment() {
         return new GroupVersionAlignment();
@@ -99,7 +82,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSources }
-     * 
      */
     public ModuleSources createModuleSources() {
         return new ModuleSources();
@@ -107,7 +89,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Repository }
-     * 
      */
     public Repository createRepository() {
         return new Repository();
@@ -115,7 +96,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link FileSet }
-     * 
      */
     public FileSet createFileSet() {
         return new FileSet();
@@ -123,7 +103,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly }
-     * 
      */
     public Assembly createAssembly() {
         return new Assembly();
@@ -131,7 +110,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link FileItem }
-     * 
      */
     public FileItem createFileItem() {
         return new FileItem();
@@ -139,7 +117,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleBinaries.Includes }
-     * 
      */
     public ModuleBinaries.Includes createModuleBinariesIncludes() {
         return new ModuleBinaries.Includes();
@@ -147,7 +124,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleBinaries.Excludes }
-     * 
      */
     public ModuleBinaries.Excludes createModuleBinariesExcludes() {
         return new ModuleBinaries.Excludes();
@@ -155,7 +131,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleBinaries.DependencySets }
-     * 
      */
     public ModuleBinaries.DependencySets createModuleBinariesDependencySets() {
         return new ModuleBinaries.DependencySets();
@@ -163,7 +138,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSet.Includes }
-     * 
      */
     public ModuleSet.Includes createModuleSetIncludes() {
         return new ModuleSet.Includes();
@@ -171,7 +145,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSet.Excludes }
-     * 
      */
     public ModuleSet.Excludes createModuleSetExcludes() {
         return new ModuleSet.Excludes();
@@ -179,7 +152,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ContainerDescriptorHandlerConfig.Configuration }
-     * 
      */
     public ContainerDescriptorHandlerConfig.Configuration createContainerDescriptorHandlerConfigConfiguration() {
         return new ContainerDescriptorHandlerConfig.Configuration();
@@ -187,7 +159,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DependencySet.Includes }
-     * 
      */
     public DependencySet.Includes createDependencySetIncludes() {
         return new DependencySet.Includes();
@@ -195,7 +166,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DependencySet.Excludes }
-     * 
      */
     public DependencySet.Excludes createDependencySetExcludes() {
         return new DependencySet.Excludes();
@@ -203,7 +173,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link UnpackOptions.Includes }
-     * 
      */
     public UnpackOptions.Includes createUnpackOptionsIncludes() {
         return new UnpackOptions.Includes();
@@ -211,7 +180,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link UnpackOptions.Excludes }
-     * 
      */
     public UnpackOptions.Excludes createUnpackOptionsExcludes() {
         return new UnpackOptions.Excludes();
@@ -219,7 +187,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GroupVersionAlignment.Excludes }
-     * 
      */
     public GroupVersionAlignment.Excludes createGroupVersionAlignmentExcludes() {
         return new GroupVersionAlignment.Excludes();
@@ -227,7 +194,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSources.Includes }
-     * 
      */
     public ModuleSources.Includes createModuleSourcesIncludes() {
         return new ModuleSources.Includes();
@@ -235,7 +201,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSources.Excludes }
-     * 
      */
     public ModuleSources.Excludes createModuleSourcesExcludes() {
         return new ModuleSources.Excludes();
@@ -243,7 +208,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ModuleSources.FileSets }
-     * 
      */
     public ModuleSources.FileSets createModuleSourcesFileSets() {
         return new ModuleSources.FileSets();
@@ -251,7 +215,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Repository.Includes }
-     * 
      */
     public Repository.Includes createRepositoryIncludes() {
         return new Repository.Includes();
@@ -259,7 +222,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Repository.Excludes }
-     * 
      */
     public Repository.Excludes createRepositoryExcludes() {
         return new Repository.Excludes();
@@ -267,7 +229,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Repository.GroupVersionAlignments }
-     * 
      */
     public Repository.GroupVersionAlignments createRepositoryGroupVersionAlignments() {
         return new Repository.GroupVersionAlignments();
@@ -275,7 +236,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link FileSet.Includes }
-     * 
      */
     public FileSet.Includes createFileSetIncludes() {
         return new FileSet.Includes();
@@ -283,7 +243,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link FileSet.Excludes }
-     * 
      */
     public FileSet.Excludes createFileSetExcludes() {
         return new FileSet.Excludes();
@@ -291,7 +250,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.Formats }
-     * 
      */
     public Assembly.Formats createAssemblyFormats() {
         return new Assembly.Formats();
@@ -299,7 +257,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.ContainerDescriptorHandlers }
-     * 
      */
     public Assembly.ContainerDescriptorHandlers createAssemblyContainerDescriptorHandlers() {
         return new Assembly.ContainerDescriptorHandlers();
@@ -307,7 +264,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.ModuleSets }
-     * 
      */
     public Assembly.ModuleSets createAssemblyModuleSets() {
         return new Assembly.ModuleSets();
@@ -315,7 +271,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.FileSets }
-     * 
      */
     public Assembly.FileSets createAssemblyFileSets() {
         return new Assembly.FileSets();
@@ -323,7 +278,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.Files }
-     * 
      */
     public Assembly.Files createAssemblyFiles() {
         return new Assembly.Files();
@@ -331,7 +285,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.DependencySets }
-     * 
      */
     public Assembly.DependencySets createAssemblyDependencySets() {
         return new Assembly.DependencySets();
@@ -339,7 +292,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.Repositories }
-     * 
      */
     public Assembly.Repositories createAssemblyRepositories() {
         return new Assembly.Repositories();
@@ -347,7 +299,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Assembly.ComponentDescriptors }
-     * 
      */
     public Assembly.ComponentDescriptors createAssemblyComponentDescriptors() {
         return new Assembly.ComponentDescriptors();
@@ -355,7 +306,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Assembly }{@code >}}
-     * 
      */
     @XmlElementDecl(namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", name = "assembly")
     public JAXBElement<Assembly> createAssembly(Assembly value) {

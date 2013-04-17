@@ -1,24 +1,16 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,15 +18,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *         A dependencySet allows inclusion and exclusion of project dependencies
- *         in the assembly.
- *       
- * 
+ * A dependencySet allows inclusion and exclusion of project dependencies
+ * in the assembly.
+ * <p/>
+ * <p/>
  * <p>Java class for DependencySet complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="DependencySet">
  *   &lt;complexContent>
@@ -79,8 +70,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DependencySet", namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", propOrder = {
@@ -119,11 +108,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the outputDirectory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputDirectory() {
         return outputDirectory;
@@ -131,11 +118,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the outputDirectory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputDirectory(String value) {
         this.outputDirectory = value;
@@ -143,11 +128,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the includes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DependencySet.Includes }
-     *     
+     *
+     * @return possible object is
+     *         {@link DependencySet.Includes }
      */
     public DependencySet.Includes getIncludes() {
         return includes;
@@ -155,11 +138,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the includes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DependencySet.Includes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DependencySet.Includes }
      */
     public void setIncludes(DependencySet.Includes value) {
         this.includes = value;
@@ -167,11 +148,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the excludes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DependencySet.Excludes }
-     *     
+     *
+     * @return possible object is
+     *         {@link DependencySet.Excludes }
      */
     public DependencySet.Excludes getExcludes() {
         return excludes;
@@ -179,11 +158,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the excludes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DependencySet.Excludes }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DependencySet.Excludes }
      */
     public void setExcludes(DependencySet.Excludes value) {
         this.excludes = value;
@@ -191,11 +168,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the fileMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getFileMode() {
         return fileMode;
@@ -203,11 +178,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the fileMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFileMode(String value) {
         this.fileMode = value;
@@ -215,11 +188,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the directoryMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDirectoryMode() {
         return directoryMode;
@@ -227,11 +198,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the directoryMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDirectoryMode(String value) {
         this.directoryMode = value;
@@ -239,11 +208,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the useStrictFiltering property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseStrictFiltering() {
         return useStrictFiltering;
@@ -251,11 +218,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the useStrictFiltering property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseStrictFiltering(Boolean value) {
         this.useStrictFiltering = value;
@@ -263,11 +228,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the outputFileNameMapping property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputFileNameMapping() {
         return outputFileNameMapping;
@@ -275,11 +238,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the outputFileNameMapping property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputFileNameMapping(String value) {
         this.outputFileNameMapping = value;
@@ -287,11 +248,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the unpack property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUnpack() {
         return unpack;
@@ -299,11 +258,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the unpack property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUnpack(Boolean value) {
         this.unpack = value;
@@ -311,11 +268,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the unpackOptions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link UnpackOptions }
-     *     
+     *
+     * @return possible object is
+     *         {@link UnpackOptions }
      */
     public UnpackOptions getUnpackOptions() {
         return unpackOptions;
@@ -323,11 +278,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the unpackOptions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link UnpackOptions }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link UnpackOptions }
      */
     public void setUnpackOptions(UnpackOptions value) {
         this.unpackOptions = value;
@@ -335,11 +288,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the scope property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getScope() {
         return scope;
@@ -347,11 +298,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the scope property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setScope(String value) {
         this.scope = value;
@@ -359,11 +308,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the useProjectArtifact property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseProjectArtifact() {
         return useProjectArtifact;
@@ -371,11 +318,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the useProjectArtifact property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseProjectArtifact(Boolean value) {
         this.useProjectArtifact = value;
@@ -383,11 +328,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the useProjectAttachments property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseProjectAttachments() {
         return useProjectAttachments;
@@ -395,11 +338,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the useProjectAttachments property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseProjectAttachments(Boolean value) {
         this.useProjectAttachments = value;
@@ -407,11 +348,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the useTransitiveDependencies property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseTransitiveDependencies() {
         return useTransitiveDependencies;
@@ -419,11 +358,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the useTransitiveDependencies property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseTransitiveDependencies(Boolean value) {
         this.useTransitiveDependencies = value;
@@ -431,11 +368,9 @@ public class DependencySet {
 
     /**
      * Gets the value of the useTransitiveFiltering property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isUseTransitiveFiltering() {
         return useTransitiveFiltering;
@@ -443,11 +378,9 @@ public class DependencySet {
 
     /**
      * Sets the value of the useTransitiveFiltering property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUseTransitiveFiltering(Boolean value) {
         this.useTransitiveFiltering = value;
@@ -456,9 +389,9 @@ public class DependencySet {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -470,12 +403,10 @@ public class DependencySet {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "exclude"
+            "exclude"
     })
     public static class Excludes {
 
@@ -484,25 +415,23 @@ public class DependencySet {
 
         /**
          * Gets the value of the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the exclude property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getExclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getExclude() {
             if (exclude == null) {
@@ -516,9 +445,9 @@ public class DependencySet {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -530,12 +459,10 @@ public class DependencySet {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "include"
+            "include"
     })
     public static class Includes {
 
@@ -544,25 +471,23 @@ public class DependencySet {
 
         /**
          * Gets the value of the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the include property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getInclude().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link String }
-         * 
-         * 
          */
         public List<String> getInclude() {
             if (include == null) {

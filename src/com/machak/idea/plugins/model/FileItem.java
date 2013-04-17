@@ -1,18 +1,9 @@
 
+
+
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package com.machak.idea.plugins.model;
@@ -24,15 +15,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *         A file allows individual file inclusion with the option to change
- *         the destination filename not supported by fileSets.
- *       
- * 
+ * A file allows individual file inclusion with the option to change
+ * the destination filename not supported by fileSets.
+ * <p/>
+ * <p/>
  * <p>Java class for FileItem complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="FileItem">
  *   &lt;complexContent>
@@ -49,8 +39,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "FileItem", namespace = "http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2", propOrder = {
@@ -73,11 +61,9 @@ public class FileItem {
 
     /**
      * Gets the value of the source property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getSource() {
         return source;
@@ -85,11 +71,9 @@ public class FileItem {
 
     /**
      * Sets the value of the source property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSource(String value) {
         this.source = value;
@@ -97,11 +81,9 @@ public class FileItem {
 
     /**
      * Gets the value of the outputDirectory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getOutputDirectory() {
         return outputDirectory;
@@ -109,11 +91,9 @@ public class FileItem {
 
     /**
      * Sets the value of the outputDirectory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setOutputDirectory(String value) {
         this.outputDirectory = value;
@@ -121,11 +101,9 @@ public class FileItem {
 
     /**
      * Gets the value of the destName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDestName() {
         return destName;
@@ -133,11 +111,9 @@ public class FileItem {
 
     /**
      * Sets the value of the destName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDestName(String value) {
         this.destName = value;
@@ -145,11 +121,9 @@ public class FileItem {
 
     /**
      * Gets the value of the fileMode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getFileMode() {
         return fileMode;
@@ -157,11 +131,9 @@ public class FileItem {
 
     /**
      * Sets the value of the fileMode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFileMode(String value) {
         this.fileMode = value;
@@ -169,11 +141,9 @@ public class FileItem {
 
     /**
      * Gets the value of the lineEnding property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getLineEnding() {
         return lineEnding;
@@ -181,11 +151,9 @@ public class FileItem {
 
     /**
      * Sets the value of the lineEnding property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLineEnding(String value) {
         this.lineEnding = value;
@@ -193,11 +161,9 @@ public class FileItem {
 
     /**
      * Gets the value of the filtered property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isFiltered() {
         return filtered;
@@ -205,11 +171,9 @@ public class FileItem {
 
     /**
      * Sets the value of the filtered property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setFiltered(Boolean value) {
         this.filtered = value;
