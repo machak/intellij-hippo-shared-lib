@@ -2,7 +2,7 @@ intellij-hippo-shared-lib
 =========================
 
 Intellij plugin which copies hippo shared libraries into defined (tomcat) shared folder.
-see: <a href="http://www.onehipo.org">http://www.onehipo.org</a>
+see: <a href="http://www.onehippo.org">http://www.onehippo.org</a>
 
 License
 =========================
