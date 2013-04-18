@@ -53,6 +53,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private static final Pattern ARTIFACT_SPLITTER = Pattern.compile(":");
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
+    public static final String DEFAULT_DIST_FILE_PATH = "src/main/assembly/distribution.xml";
     public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
     public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
     public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);
@@ -94,11 +95,12 @@ public class CopyHippoSharedFiles extends AnAction {
                 return;
             }
 
-            final String dist = "/src/main/assembly/distribution.xml";
-            final String basePath = project.getBasePath();
-            final File distFile = new File(basePath + dist);
+
+            final String distributionFilePath = extractDistributionFilePath(project, component);
+
+            final File distFile = new File(distributionFilePath);
             if (!distFile.exists()) {
-                error("Missing dist file: " + dist);
+                error("Missing dist file: " + distributionFilePath);
                 return;
             }
 
@@ -144,6 +146,21 @@ public class CopyHippoSharedFiles extends AnAction {
 
         }
 
+    }
+
+    private String extractDistributionFilePath(final Project project, final ApplicationComponent component) {
+        final String distributionFilePath;
+        if (Strings.isNullOrEmpty(component.getDistFile())) {
+            final String basePath = project.getBasePath();
+            if (basePath.endsWith(File.separator)) {
+                distributionFilePath = project.getBasePath() + DEFAULT_DIST_FILE_PATH;
+            } else {
+                distributionFilePath = project.getBasePath() + File.separator + DEFAULT_DIST_FILE_PATH;
+            }
+        } else {
+            distributionFilePath = component.getDistFile();
+        }
+        return distributionFilePath;
     }
 
     private void copyFile(final String tomcatSharedDirectory, final VirtualFile jarFile) throws IOException {

@@ -32,10 +32,12 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
     public static final String DELETE_JARS_ATTRIBUTE = "deleteAllJars";
     public static final String COPY_JARS_ATTRIBUTE = "displayLineNumbers";
     public static final String TOMCAT_DIR_ATTRIBUTE = "tomcatDirectory";
+    public static final String DIST_FILE_ATTRIBUTE = "distFile";
     public static final String CONFIGURATION_CONFIG_ELEMENT = "hippo-shared-config";
     private boolean deleteAllJars;
     private boolean copyOtherJars;
     private String tomcatDirectory;
+    private String distFile;
     private PluginConfiguration configPane;
 
     @Override
@@ -58,6 +60,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         element.setAttribute(COPY_JARS_ATTRIBUTE, String.valueOf(copyOtherJars));
         element.setAttribute(DELETE_JARS_ATTRIBUTE, String.valueOf(deleteAllJars));
         element.setAttribute(TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
+        element.setAttribute(DIST_FILE_ATTRIBUTE, distFile);
         return element;
     }
 
@@ -72,6 +75,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
             deleteAllJars = Boolean.valueOf(deleteJars);
         }
         tomcatDirectory = element.getAttributeValue(TOMCAT_DIR_ATTRIBUTE);
+        distFile = element.getAttributeValue(DIST_FILE_ATTRIBUTE);
 
     }
 
@@ -138,6 +142,14 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
 
     public String getTomcatDirectory() {
         return tomcatDirectory;
+    }
+
+    public String getDistFile() {
+        return distFile;
+    }
+
+    public void setDistFile(final String distFile) {
+        this.distFile = distFile;
     }
 
     public void setTomcatDirectory(final String tomcatDirectory) {

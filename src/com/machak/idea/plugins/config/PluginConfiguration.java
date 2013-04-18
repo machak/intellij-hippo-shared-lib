@@ -33,13 +33,16 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.TextAccessor;
 
 public class PluginConfiguration extends BaseConfigurable {
     private JLabel label;
+    private JLabel labelDist;
     private JPanel mainPanel;
     private JCheckBox deleteAllJars;
     private JCheckBox copyOtherJars;
     private TextFieldWithBrowseButton tomcatDirectory;
+    private TextFieldWithBrowseButton distFile;
     private JLabel explanationLabel;
 
 
@@ -52,18 +55,39 @@ public class PluginConfiguration extends BaseConfigurable {
         };
         tomcatDirectory.getChildComponent().getDocument().addDocumentListener(listener);
         tomcatDirectory.setTextFieldPreferredWidth(50);
-
         tomcatDirectory.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                chooseFolder();
+                chooseFolder(tomcatDirectory, false);
             }
         });
 
-        explanationLabel.setText("<html><p>If selected, all *jar files* within above defined directory will be *deleted*,</p>" +
+        //############################################
+        // DIST file
+        //############################################
+
+        final DocumentListener distListener = new DocumentAdapter() {
+            protected void textChanged(DocumentEvent documentEvent) {
+                distFile.getText();
+            }
+        };
+        distFile.getChildComponent().getDocument().addDocumentListener(distListener);
+        distFile.setTextFieldPreferredWidth(50);
+        distFile.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                chooseFolder(distFile, true);
+            }
+        });
+
+        explanationLabel.setText("<html>" +
+                "<p>If selected, all *jar files* within above defined directory will be *deleted*,</p>" +
                 "<p>otherwise only the *jar files* that are sharing same *prefix* as shared jar files.</p>" +
                 "<p> </p>" +
-                "<p>e.g. these are currently  \"prefixes\" of the shared jar files:</p>" +
+                "<p>Use \"Delete all jars\" option *only* if you configured an extra shared directory within  </p>" +
+                "<p>catalina.properties, e..g. : </p>" +
+                "<pre>shared.loader=${catalina.home}/hippo,${catalina.home}/hippo/*.jar</pre>" +
                 "<p> </p>" +
+                "<p>If \"Delete all jars\" option is not selected,</p>" +
+                "<p>only files with following prefixed files will be deleted:</p>" +
                 "<p>jcr, jdo2-api, geronimo-jta_1.1_spec, mail, hippo-cms7-commons, </p>" +
                 "<p>hippo-services, hippo-repository-api, hippo-repository-builtin,</p>" +
                 "<p>slf4j-api, jcl-over-slf4j, slf4j-log4j12, log4j</p>" +
@@ -88,8 +112,7 @@ public class PluginConfiguration extends BaseConfigurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        /*projectComponent.getState().directory = directoryField.getText();
-        projectComponent.getState().configured = true;*/
+
     }
 
     @Override
@@ -105,8 +128,18 @@ public class PluginConfiguration extends BaseConfigurable {
         if (changed) {
             return true;
         }
-        final String text = tomcatDirectory.getText();
-        final String dir = component.getTomcatDirectory();
+        final String tomcatText = tomcatDirectory.getText();
+        final String tomcatDir = component.getTomcatDirectory();
+        final boolean tomcatTextChanged = isTextChanged(tomcatText, tomcatDir);
+        if (tomcatTextChanged) {
+            return true;
+        }
+        final String distText = distFile.getText();
+        final String distFileTxt = component.getDistFile();
+        return isTextChanged(distText, distFileTxt);
+    }
+
+    private boolean isTextChanged(final String text, final String dir) {
         if (text == null) {
             if (dir == null) {
                 return false;
@@ -121,12 +154,14 @@ public class PluginConfiguration extends BaseConfigurable {
         component.setDeleteAllJars(deleteAllJars.isSelected());
         component.setCopyOtherJars(copyOtherJars.isSelected());
         component.setTomcatDirectory(tomcatDirectory.getText());
+        component.setDistFile(distFile.getText());
     }
 
     public void readDataFrom(ApplicationComponent component) {
         deleteAllJars.setSelected(component.isDeleteAllJars());
         copyOtherJars.setSelected(component.isCopyOtherJars());
         tomcatDirectory.setText(component.getTomcatDirectory());
+        distFile.setText(component.getDistFile());
     }
 
     public Project getProject(final Component component) {
@@ -145,8 +180,8 @@ public class PluginConfiguration extends BaseConfigurable {
     //
     //############################################
 
-    private void chooseFolder() {
-        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
+    private void chooseFolder(final TextAccessor field, final boolean chooseFiles) {
+        final FileChooserDescriptor descriptor = new FileChooserDescriptor(chooseFiles, !chooseFiles, false, false, false, false) {
             public String getName(VirtualFile virtualFile) {
                 return virtualFile.getName();
             }
@@ -158,12 +193,12 @@ public class PluginConfiguration extends BaseConfigurable {
         };
         descriptor.setTitle("Select Project Destination Folder");
 
-        String preselectedFolderPath = tomcatDirectory.getText();
-        VirtualFile preselectedFolder = LocalFileSystem.getInstance().findFileByPath(preselectedFolderPath);
+        final String selectedPath = field.getText();
+        final VirtualFile preselectedFolder = LocalFileSystem.getInstance().findFileByPath(selectedPath);
 
-        VirtualFile[] files = FileChooser.chooseFiles(descriptor, mainPanel, getProject(mainPanel), preselectedFolder);
+        final VirtualFile[] files = FileChooser.chooseFiles(descriptor, mainPanel, getProject(mainPanel), preselectedFolder);
         if (files.length > 0) {
-            tomcatDirectory.setText(files[0].getPath());
+            field.setText(files[0].getPath());
         }
     }
 }
