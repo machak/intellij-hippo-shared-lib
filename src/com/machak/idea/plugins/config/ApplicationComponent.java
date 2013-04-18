@@ -57,11 +57,18 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
     @Override
     public Element getState() {
         final Element element = new Element(CONFIGURATION_CONFIG_ELEMENT);
-        element.setAttribute(COPY_JARS_ATTRIBUTE, String.valueOf(copyOtherJars));
-        element.setAttribute(DELETE_JARS_ATTRIBUTE, String.valueOf(deleteAllJars));
-        element.setAttribute(TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
-        element.setAttribute(DIST_FILE_ATTRIBUTE, distFile);
+        checkNullSave(element, COPY_JARS_ATTRIBUTE, String.valueOf(copyOtherJars));
+        checkNullSave(element, DELETE_JARS_ATTRIBUTE, String.valueOf(deleteAllJars));
+        checkNullSave(element, TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
+        checkNullSave(element, DIST_FILE_ATTRIBUTE, distFile);
         return element;
+    }
+
+    private void checkNullSave(final Element element, final String attr, final String value) {
+        if (value == null) {
+            return;
+        }
+        element.setAttribute(attr, value);
     }
 
     @Override
