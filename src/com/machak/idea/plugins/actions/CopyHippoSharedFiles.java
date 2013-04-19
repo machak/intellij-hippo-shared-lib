@@ -11,6 +11,8 @@
 
 package com.machak.idea.plugins.actions;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -20,6 +22,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -41,31 +48,39 @@ import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.ui.DialogBuilder;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.BooleanTableCellRenderer;
+import com.intellij.ui.table.JBTable;
 import com.machak.idea.plugins.config.ApplicationComponent;
 import com.machak.idea.plugins.config.ProjectComponent;
 import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 
+
 public class CopyHippoSharedFiles extends AnAction {
-
-
+    private static final int CHECKED_COLUMN = 0;
+    private static final int FILE_COLUMN = 1;
     private static final Pattern ARTIFACT_SPLITTER = Pattern.compile(":");
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
+    private static final Object[] COLUMN_NAMES = {"Files", "Delete?"};
     public static final String DEFAULT_DIST_FILE_PATH = "src/main/assembly/distribution.xml";
     public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
     public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
     public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);
-    private Project myProject;
+    private Project project;
+    private String[] myFiles;
+    private boolean[] myCheckedMarks;
 
     public void actionPerformed(AnActionEvent event) {
 
 
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
+        project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
         if (project != null) {
 
-            myProject = project;
+
             // project settings have higher priority (override):
             ApplicationComponent component = project.getComponent(ProjectComponent.class);
             if (notValid(component)) {
@@ -104,48 +119,48 @@ public class CopyHippoSharedFiles extends AnAction {
                 return;
             }
 
-            try {
+
+            final Map<String, String> depMap = extractDependencies(component, distFile);
+            if (depMap.isEmpty()) {
+                info("No files to copy");
+                return;
+            }
+            // cleanup old stuff
+            processJars(component, tomcatSharedDirectory, sharedDirectory, depMap);
 
 
-                final Map<String, String> depMap = extractDependencies(component, distFile);
-                if (depMap.isEmpty()) {
-                    info("No files to copy");
-                    return;
-                }
-                // cleanup old stuff
-                deleteOldJars(component, sharedDirectory, depMap);
+        }
 
+    }
 
-                final Module[] modules = ModuleManager.getInstance(project).getModules();
-                for (Module module : modules) {
-                    final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
-                    for (OrderEntry library : orderEntries) {
-                        if (library instanceof LibraryOrderEntry) {
-                            final LibraryOrderEntry lib = (LibraryOrderEntry) library;
-                            final String libraryName = lib.getLibraryName();
-                            final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
-                            if (matcher.matches()) {
-                                final String artifactName = matcher.group(1);
-                                final String groupName = matcher.group(2);
-                                final String ourName = depMap.get(groupName);
-                                if (ourName == null || !ourName.equals(artifactName)) {
-                                    continue;
-                                }
-                                final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
-                                if (jarFiles.length == 1) {
-                                    copyFile(tomcatSharedDirectory, jarFiles[0]);
-                                }
+    private void copyJars(final String tomcatSharedDirectory, final Map<String, String> depMap) {
+        final Module[] modules = ModuleManager.getInstance(project).getModules();
+        for (Module module : modules) {
+            final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
+            for (OrderEntry library : orderEntries) {
+                if (library instanceof LibraryOrderEntry) {
+                    final LibraryOrderEntry lib = (LibraryOrderEntry) library;
+                    final String libraryName = lib.getLibraryName();
+                    final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
+                    if (matcher.matches()) {
+                        final String artifactName = matcher.group(1);
+                        final String groupName = matcher.group(2);
+                        final String ourName = depMap.get(groupName);
+                        if (ourName == null || !ourName.equals(artifactName)) {
+                            continue;
+                        }
+                        final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
+                        if (jarFiles.length == 1) {
+                            try {
+                                copyFile(tomcatSharedDirectory, jarFiles[0]);
+                            } catch (IOException e) {
+                                error(String.format("Error while copy file%s", e.getMessage()));
                             }
                         }
                     }
                 }
-
-            } catch (IOException e) {
-                error("Error while copy file" + e.getMessage());
             }
-
         }
-
     }
 
     private String extractDistributionFilePath(final Project project, final ApplicationComponent component) {
@@ -219,15 +234,86 @@ public class CopyHippoSharedFiles extends AnAction {
         return depMap;
     }
 
-    private void deleteOldJars(final ApplicationComponent component, final File sharedDirectory, final Map<String, String> depMap) {
+    private void processJars(final ApplicationComponent component, final String tomcatSharedDirectory, final File sharedDirectory, final Map<String, String> depMap) {
+
+        final FilenameFilter fileFilter = createJarsFilter(component, depMap);
+        final File[] jars = sharedDirectory.listFiles(fileFilter);
+        if (!component.isShowDialog()) {
+            for (File jar : jars) {
+                deleteFile(jar);
+            }
+            copyJars(tomcatSharedDirectory, depMap);
+            return;
+        }
+        final int length = jars.length;
+        myFiles = new String[length];
+        myCheckedMarks = new boolean[length];
+        for (int i = 0; i < length; i++) {
+            final File file = jars[i];
+            myFiles[i] = file.getAbsolutePath();
+            myCheckedMarks[i] = true;
+        }
+
+
+        final TableModel model = new MyTableModel();
+        final JBTable myTable = new JBTable();
+        myTable.setPreferredSize(new Dimension(700, 400));
+        myTable.setModel(model);
+        final TableColumnModel columnModel = myTable.getColumnModel();
+        columnModel.getColumn(CHECKED_COLUMN).setCellRenderer(new BooleanTableCellRenderer());
+        columnModel.getColumn(CHECKED_COLUMN).setPreferredWidth(40);
+        columnModel.getColumn(FILE_COLUMN).setPreferredWidth(660);
+
+        final DialogBuilder dialogBuilder = new DialogBuilder(project);
+        dialogBuilder.setTitle("Files to delete");
+        dialogBuilder.setCenterPanel(myTable);
+
+        final Action deleteAction = new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final int length = model.getRowCount();
+                for (int i = 0; i < length; i++) {
+                    final Boolean checked = (Boolean) model.getValueAt(i, CHECKED_COLUMN);
+                    if (checked) {
+                        final File jar = jars[i];
+                        deleteFile(jar);
+                    }
+                }
+                // do copy:
+                copyJars(tomcatSharedDirectory, depMap);
+                dialogBuilder.getDialogWrapper().close(DialogWrapper.OK_EXIT_CODE);
+            }
+        };
+        deleteAction.putValue(Action.NAME, "OK");
+        dialogBuilder.addAction(deleteAction);
+
+        dialogBuilder.addCancelAction();
+        dialogBuilder.showModal(true);
+
+    }
+
+    private void deleteFile(final File jar) {
+        final String filePath = jar.getPath();
+        final boolean deleted = jar.delete();
+        if (deleted) {
+            info(String.format("Deleted: %s", filePath));
+        } else {
+            warn(String.format("Failed to delete: %s", filePath));
+        }
+    }
+
+    private FilenameFilter createJarsFilter(final ApplicationComponent component, final Map<String, String> depMap) {
         final FilenameFilter fileFilter;
         if (component.isDeleteAllJars()) {
-            fileFilter = new FilenameFilter() {
+            final FilenameFilter allJarsFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(final File file, final String name) {
                     return name.endsWith(".jar");
                 }
             };
+            fileFilter = allJarsFilter;
         } else {
             fileFilter = new FilenameFilter() {
                 @Override
@@ -245,17 +331,7 @@ public class CopyHippoSharedFiles extends AnAction {
                 }
             };
         }
-        final File[] jars = sharedDirectory.listFiles(fileFilter);
-        for (File jar : jars) {
-            final String filePath = jar.getAbsolutePath();
-
-            final boolean delete = jar.delete();
-            if (delete) {
-                info(String.format("Deleted: %s", filePath));
-            } else {
-                warn(String.format("Failed to delete: %s", filePath));
-            }
-        }
+        return fileFilter;
     }
 
     private boolean notValid(final ApplicationComponent component) {
@@ -264,18 +340,71 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private void error(final String message) {
         final Notification notification = ERROR_GROUP.createNotification(message, NotificationType.ERROR);
-        notification.notify(myProject);
+        notification.notify(project);
     }
 
     private void info(final String message) {
         final Notification notification = INFO_GROUP.createNotification(message, NotificationType.INFORMATION);
-        notification.notify(myProject);
+        notification.notify(project);
     }
 
     private void warn(final String message) {
         final Notification notification = INFO_GROUP.createNotification(message, NotificationType.WARNING);
-        notification.notify(myProject);
+        notification.notify(project);
     }
 
+    private class MyTableModel extends AbstractTableModel {
+        private static final long serialVersionUID = 1L;
 
+        public int getRowCount() {
+            return myFiles.length;
+        }
+
+        public int getColumnCount() {
+            return COLUMN_NAMES.length;
+        }
+
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case CHECKED_COLUMN:
+                    return myCheckedMarks[rowIndex] ? Boolean.TRUE : Boolean.FALSE;
+                case FILE_COLUMN:
+                    return myFiles[rowIndex];
+
+            }
+            throw new RuntimeException("Incorrect column index");
+        }
+
+        public String getColumnName(int column) {
+            switch (column) {
+                case CHECKED_COLUMN:
+                    return "Delete";
+                case FILE_COLUMN:
+                    return "Files";
+                default:
+                    throw new RuntimeException("Incorrect column index");
+            }
+        }
+
+        public Class<?> getColumnClass(int columnIndex) {
+            if (columnIndex == CHECKED_COLUMN) {
+                return Boolean.class;
+            }
+            return super.getColumnClass(columnIndex);
+        }
+
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == CHECKED_COLUMN;
+        }
+
+        public void setValueAt(final Object aValue, final int rowIndex, final int columnIndex) {
+            if (columnIndex == CHECKED_COLUMN) {
+                myCheckedMarks[rowIndex] = (Boolean) aValue;
+                fireTableRowsUpdated(rowIndex, rowIndex);
+            } else {
+                String name = (String) aValue;
+                myFiles[rowIndex] = name;
+            }
+        }
+    }
 }

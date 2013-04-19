@@ -40,6 +40,7 @@ public class PluginConfiguration extends BaseConfigurable {
     private JLabel labelDist;
     private JPanel mainPanel;
     private JCheckBox deleteAllJars;
+    private JCheckBox showConfirmationDialog;
     private JCheckBox copyOtherJars;
     private TextFieldWithBrowseButton tomcatDirectory;
     private TextFieldWithBrowseButton distFile;
@@ -124,7 +125,9 @@ public class PluginConfiguration extends BaseConfigurable {
     }
 
     public boolean isModified(ApplicationComponent component) {
-        final boolean changed = deleteAllJars.isSelected() != component.isDeleteAllJars() || copyOtherJars.isSelected() != component.isCopyOtherJars();
+        final boolean changed = deleteAllJars.isSelected() != component.isDeleteAllJars()
+                || showConfirmationDialog.isSelected() != component.isShowDialog()
+                || copyOtherJars.isSelected() != component.isCopyOtherJars();
         if (changed) {
             return true;
         }
@@ -153,6 +156,7 @@ public class PluginConfiguration extends BaseConfigurable {
     public void storeDataTo(ApplicationComponent component) {
         component.setDeleteAllJars(deleteAllJars.isSelected());
         component.setCopyOtherJars(copyOtherJars.isSelected());
+        component.setShowDialog(showConfirmationDialog.isSelected());
         component.setTomcatDirectory(tomcatDirectory.getText());
         component.setDistFile(distFile.getText());
     }
@@ -160,6 +164,7 @@ public class PluginConfiguration extends BaseConfigurable {
     public void readDataFrom(ApplicationComponent component) {
         deleteAllJars.setSelected(component.isDeleteAllJars());
         copyOtherJars.setSelected(component.isCopyOtherJars());
+        showConfirmationDialog.setSelected(component.isShowDialog());
         tomcatDirectory.setText(component.getTomcatDirectory());
         distFile.setText(component.getDistFile());
     }

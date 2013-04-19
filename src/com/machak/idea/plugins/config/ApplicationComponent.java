@@ -30,6 +30,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
 
 
     public static final String DELETE_JARS_ATTRIBUTE = "deleteAllJars";
+    public static final String SHOW_DIALOG_ATTRIBUTE = "showDialog";
     public static final String COPY_JARS_ATTRIBUTE = "displayLineNumbers";
     public static final String TOMCAT_DIR_ATTRIBUTE = "tomcatDirectory";
     public static final String DIST_FILE_ATTRIBUTE = "distFile";
@@ -39,6 +40,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
     private String tomcatDirectory;
     private String distFile;
     private PluginConfiguration configPane;
+    private boolean showDialog;
 
     @Override
     public void initComponent() {
@@ -59,16 +61,10 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         final Element element = new Element(CONFIGURATION_CONFIG_ELEMENT);
         checkNullSave(element, COPY_JARS_ATTRIBUTE, String.valueOf(copyOtherJars));
         checkNullSave(element, DELETE_JARS_ATTRIBUTE, String.valueOf(deleteAllJars));
+        checkNullSave(element, SHOW_DIALOG_ATTRIBUTE, String.valueOf(showDialog));
         checkNullSave(element, TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
         checkNullSave(element, DIST_FILE_ATTRIBUTE, distFile);
         return element;
-    }
-
-    private void checkNullSave(final Element element, final String attr, final String value) {
-        if (value == null) {
-            return;
-        }
-        element.setAttribute(attr, value);
     }
 
     @Override
@@ -81,9 +77,21 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         if (StringUtils.isNotBlank(deleteJars)) {
             deleteAllJars = Boolean.valueOf(deleteJars);
         }
+        String show = element.getAttributeValue(SHOW_DIALOG_ATTRIBUTE);
+        if (StringUtils.isNotBlank(show)) {
+            showDialog = Boolean.valueOf(show);
+        }
         tomcatDirectory = element.getAttributeValue(TOMCAT_DIR_ATTRIBUTE);
         distFile = element.getAttributeValue(DIST_FILE_ATTRIBUTE);
 
+    }
+
+    public boolean isShowDialog() {
+        return showDialog;
+    }
+
+    public void setShowDialog(final boolean showDialog) {
+        this.showDialog = showDialog;
     }
 
     @Nls
@@ -151,6 +159,10 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         return tomcatDirectory;
     }
 
+    public void setTomcatDirectory(final String tomcatDirectory) {
+        this.tomcatDirectory = tomcatDirectory;
+    }
+
     public String getDistFile() {
         return distFile;
     }
@@ -159,7 +171,10 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         this.distFile = distFile;
     }
 
-    public void setTomcatDirectory(final String tomcatDirectory) {
-        this.tomcatDirectory = tomcatDirectory;
+    private void checkNullSave(final Element element, final String attr, final String value) {
+        if (value == null) {
+            return;
+        }
+        element.setAttribute(attr, value);
     }
 }
