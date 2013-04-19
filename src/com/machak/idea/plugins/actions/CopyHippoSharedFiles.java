@@ -3,11 +3,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-/*
- * Copyright 2013 m.milicevic (http://www.machak.com)
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-
 
 package com.machak.idea.plugins.actions;
 
@@ -66,7 +61,7 @@ public class CopyHippoSharedFiles extends AnAction {
     private static final Pattern ARTIFACT_SPLITTER = Pattern.compile(":");
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
     private static final Object[] COLUMN_NAMES = {"Files", "Delete?"};
-    public static final String DEFAULT_DIST_FILE_PATH = "src/main/assembly/distribution.xml";
+    public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
     public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
     public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
     public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);

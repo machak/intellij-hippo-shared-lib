@@ -14,8 +14,9 @@
       ]]></description>
 
   <change-notes><![CDATA[
-      1.0.1 added confirmation dialog (when deleting files), optional path to distribution.xml
-      1.0 initial release
+      1.0.2 fix  path to distribution.xml (windows) <br />
+      1.0.1 added confirmation dialog (when deleting files), optional path to distribution.xml<br />
+      1.0 initial release <br />
       ]]>
   </change-notes>
 
