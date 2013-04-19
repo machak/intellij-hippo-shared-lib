@@ -6,7 +6,7 @@
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[
