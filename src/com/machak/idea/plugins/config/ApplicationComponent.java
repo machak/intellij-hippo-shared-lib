@@ -25,13 +25,13 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 
 
-@State(name = "HippoSharedApplicationConfig", storages = {@Storage(id = "dir", file = StoragePathMacros.APP_CONFIG + "/hippo.shared_libs.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+@State(name = "HippoSharedApplicationConfig", storages = {@Storage(id = "dir", file = StoragePathMacros.APP_CONFIG + "/hippo_shared_libs.xml", scheme = StorageScheme.DIRECTORY_BASED)})
 public class ApplicationComponent implements com.intellij.openapi.components.ApplicationComponent, Configurable, PersistentStateComponent<Element> {
 
 
     public static final String DELETE_JARS_ATTRIBUTE = "deleteAllJars";
     public static final String SHOW_DIALOG_ATTRIBUTE = "showDialog";
-    public static final String COPY_JARS_ATTRIBUTE = "displayLineNumbers";
+    public static final String COPY_JARS_ATTRIBUTE = "copyOtherJars";
     public static final String TOMCAT_DIR_ATTRIBUTE = "tomcatDirectory";
     public static final String DIST_FILE_ATTRIBUTE = "distFile";
     public static final String CONFIGURATION_CONFIG_ELEMENT = "hippo-shared-config";

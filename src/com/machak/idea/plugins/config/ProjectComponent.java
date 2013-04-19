@@ -17,7 +17,7 @@ import com.intellij.openapi.components.StorageScheme;
 /**
  * @version "$Id$"
  */
-@State(name = "HippoSharedProjectConfig", storages = {@Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/hippo.shared_libs.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+@State(name = "HippoSharedProjectConfig", storages = {@Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "hippo_shared_libs.xml", scheme = StorageScheme.DIRECTORY_BASED)})
 public class ProjectComponent extends ApplicationComponent implements com.intellij.openapi.components.ProjectComponent {
 
 
