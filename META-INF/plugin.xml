@@ -6,15 +6,16 @@
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0</version>
-  <vendor email="me@machak.com" url="http://www.machak.com">machak</vendor>
+  <version>1.0.1</version>
+  <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[
       Deploy shared hippo dependencies into tomcat shared library
       ]]></description>
 
   <change-notes><![CDATA[
-      initial release
+      1.0.1 added confirmation dialog (when deleting files), optional path to distribution.xml
+      1.0 initial release
       ]]>
   </change-notes>
 
