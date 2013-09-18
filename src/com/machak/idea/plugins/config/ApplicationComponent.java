@@ -33,14 +33,20 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
     public static final String SHOW_DIALOG_ATTRIBUTE = "showDialog";
     public static final String COPY_JARS_ATTRIBUTE = "copyOtherJars";
     public static final String TOMCAT_DIR_ATTRIBUTE = "tomcatDirectory";
+    public static final String TOMCAT_ROOT_DIR_ATTRIBUTE = "tomcatRootDirectory";
     public static final String DIST_FILE_ATTRIBUTE = "distFile";
+    public static final String CREATE_PROJECT_FILE_ATTRIBUTE = "createProjectFile";
+    public static final String PROJECT_ROOT_FILE_ATTRIBUTE = "projectRootFile";
     public static final String CONFIGURATION_CONFIG_ELEMENT = "hippo-shared-config";
     private boolean deleteAllJars;
     private boolean copyOtherJars;
     private String tomcatDirectory;
+    private String tomcatRootDirectory;
+    private String projectRootDirectory;
     private String distFile;
     private PluginConfiguration configPane;
     private boolean showDialog;
+    private boolean createProjectFile;
 
     @Override
     public void initComponent() {
@@ -61,8 +67,11 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         final Element element = new Element(CONFIGURATION_CONFIG_ELEMENT);
         checkNullSave(element, COPY_JARS_ATTRIBUTE, String.valueOf(copyOtherJars));
         checkNullSave(element, DELETE_JARS_ATTRIBUTE, String.valueOf(deleteAllJars));
+        checkNullSave(element, CREATE_PROJECT_FILE_ATTRIBUTE, String.valueOf(createProjectFile));
         checkNullSave(element, SHOW_DIALOG_ATTRIBUTE, String.valueOf(showDialog));
         checkNullSave(element, TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
+        checkNullSave(element, TOMCAT_ROOT_DIR_ATTRIBUTE, tomcatDirectory);
+        checkNullSave(element, PROJECT_ROOT_FILE_ATTRIBUTE, projectRootDirectory);
         checkNullSave(element, DIST_FILE_ATTRIBUTE, distFile);
         return element;
     }
@@ -77,13 +86,27 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         if (StringUtils.isNotBlank(deleteJars)) {
             deleteAllJars = Boolean.valueOf(deleteJars);
         }
+        String createProjectRoot = element.getAttributeValue(CREATE_PROJECT_FILE_ATTRIBUTE);
+        if (StringUtils.isNotBlank(createProjectRoot)) {
+            createProjectFile = Boolean.valueOf(createProjectRoot);
+        }
         String show = element.getAttributeValue(SHOW_DIALOG_ATTRIBUTE);
         if (StringUtils.isNotBlank(show)) {
             showDialog = Boolean.valueOf(show);
         }
         tomcatDirectory = element.getAttributeValue(TOMCAT_DIR_ATTRIBUTE);
+        tomcatRootDirectory = element.getAttributeValue(TOMCAT_ROOT_DIR_ATTRIBUTE);
+        projectRootDirectory = element.getAttributeValue(PROJECT_ROOT_FILE_ATTRIBUTE);
         distFile = element.getAttributeValue(DIST_FILE_ATTRIBUTE);
 
+    }
+
+    public boolean isCreateProjectFile() {
+        return createProjectFile;
+    }
+
+    public void setCreateProjectFile(final boolean createProjectFile) {
+        this.createProjectFile = createProjectFile;
     }
 
     public boolean isShowDialog() {
@@ -161,6 +184,22 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
 
     public void setTomcatDirectory(final String tomcatDirectory) {
         this.tomcatDirectory = tomcatDirectory;
+    }
+
+    public String getProjectRootDirectory() {
+        return projectRootDirectory;
+    }
+
+    public void setProjectRootDirectory(final String projectRootDirectory) {
+        this.projectRootDirectory = projectRootDirectory;
+    }
+
+    public void setTomcatRootDirectory(final String tomcatRootDirectory) {
+        this.tomcatRootDirectory = tomcatRootDirectory;
+    }
+
+    public String getTomcatRootDirectory() {
+        return tomcatRootDirectory;
     }
 
     public String getDistFile() {

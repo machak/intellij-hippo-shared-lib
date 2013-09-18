@@ -45,39 +45,19 @@ public class PluginConfiguration extends BaseConfigurable {
     private TextFieldWithBrowseButton tomcatDirectory;
     private TextFieldWithBrowseButton distFile;
     private JLabel explanationLabel;
+    private JCheckBox createProjectFile;
+    private JLabel labelCreateProjectRoot;
+    private JLabel tomcatRootLabel;
+    private TextFieldWithBrowseButton tomcatRootDirectory;
+    private TextFieldWithBrowseButton projectRootDirectory;
 
 
     public PluginConfiguration() {
 
-        final DocumentListener listener = new DocumentAdapter() {
-            protected void textChanged(DocumentEvent documentEvent) {
-                tomcatDirectory.getText();
-            }
-        };
-        tomcatDirectory.getChildComponent().getDocument().addDocumentListener(listener);
-        tomcatDirectory.setTextFieldPreferredWidth(50);
-        tomcatDirectory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                chooseFolder(tomcatDirectory, false);
-            }
-        });
-
-        //############################################
-        // DIST file
-        //############################################
-
-        final DocumentListener distListener = new DocumentAdapter() {
-            protected void textChanged(DocumentEvent documentEvent) {
-                distFile.getText();
-            }
-        };
-        distFile.getChildComponent().getDocument().addDocumentListener(distListener);
-        distFile.setTextFieldPreferredWidth(50);
-        distFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                chooseFolder(distFile, true);
-            }
-        });
+        createDirListener(tomcatDirectory);
+        createDirListener(distFile);
+        createDirListener(tomcatRootDirectory);
+        createDirListener(projectRootDirectory);
 
         explanationLabel.setText("<html>" +
                 "<p>If selected, all *jar files* within above defined directory will be *deleted*,</p>" +
@@ -93,6 +73,21 @@ public class PluginConfiguration extends BaseConfigurable {
                 "<p>hippo-services, hippo-repository-api, hippo-repository-builtin,</p>" +
                 "<p>slf4j-api, jcl-over-slf4j, slf4j-log4j12, log4j</p>" +
                 "</html>");
+    }
+
+    private void createDirListener(final TextFieldWithBrowseButton button) {
+        final DocumentListener listener = new DocumentAdapter() {
+            protected void textChanged(DocumentEvent documentEvent) {
+                button.getText();
+            }
+        };
+        button.getChildComponent().getDocument().addDocumentListener(listener);
+        button.setTextFieldPreferredWidth(50);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                chooseFolder(button, false);
+            }
+        });
     }
 
     @Nls
@@ -127,20 +122,32 @@ public class PluginConfiguration extends BaseConfigurable {
     public boolean isModified(ApplicationComponent component) {
         final boolean changed = deleteAllJars.isSelected() != component.isDeleteAllJars()
                 || showConfirmationDialog.isSelected() != component.isShowDialog()
+                || createProjectFile.isSelected() != component.isCreateProjectFile()
                 || copyOtherJars.isSelected() != component.isCopyOtherJars();
         if (changed) {
             return true;
         }
         final String tomcatText = tomcatDirectory.getText();
         final String tomcatDir = component.getTomcatDirectory();
-        final boolean tomcatTextChanged = isTextChanged(tomcatText, tomcatDir);
-        if (tomcatTextChanged) {
+        if (isTextChanged(tomcatText, tomcatDir)) {
             return true;
         }
+        final String tomcatRootText = tomcatRootDirectory.getText();
+        final String tomcatRootDir = component.getTomcatDirectory();
+        if (isTextChanged(tomcatRootText, tomcatRootDir)) {
+            return true;
+        }
+        final String projectRootText = projectRootDirectory.getText();
+        final String projectRootDir = component.getProjectRootDirectory();
+        if (isTextChanged(projectRootText, projectRootDir)) {
+            return true;
+        }
+
         final String distText = distFile.getText();
         final String distFileTxt = component.getDistFile();
         return isTextChanged(distText, distFileTxt);
     }
+
 
     private boolean isTextChanged(final String text, final String dir) {
         if (text == null) {
@@ -157,15 +164,21 @@ public class PluginConfiguration extends BaseConfigurable {
         component.setDeleteAllJars(deleteAllJars.isSelected());
         component.setCopyOtherJars(copyOtherJars.isSelected());
         component.setShowDialog(showConfirmationDialog.isSelected());
+        component.setCreateProjectFile(createProjectFile.isSelected());
         component.setTomcatDirectory(tomcatDirectory.getText());
+        component.setTomcatRootDirectory(tomcatRootDirectory.getText());
+        component.setProjectRootDirectory(projectRootDirectory.getText());
         component.setDistFile(distFile.getText());
     }
 
     public void readDataFrom(ApplicationComponent component) {
         deleteAllJars.setSelected(component.isDeleteAllJars());
         copyOtherJars.setSelected(component.isCopyOtherJars());
+        createProjectFile.setSelected(component.isCreateProjectFile());
         showConfirmationDialog.setSelected(component.isShowDialog());
         tomcatDirectory.setText(component.getTomcatDirectory());
+        tomcatRootDirectory.setText(component.getTomcatRootDirectory());
+        projectRootDirectory.setText(component.getProjectRootDirectory());
         distFile.setText(component.getDistFile());
     }
 

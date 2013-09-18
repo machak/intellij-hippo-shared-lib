@@ -9,6 +9,7 @@ package com.machak.idea.plugins.actions;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -56,15 +59,19 @@ import com.machak.idea.plugins.model.DependencySet;
 
 
 public class CopyHippoSharedFiles extends AnAction {
+    /**
+     * Name of the project files
+     */
+    public static final String PROJECT_FILE = "hippo_project_directory.txt";
+    public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
+    public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
+    public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
+    public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);
     private static final int CHECKED_COLUMN = 0;
     private static final int FILE_COLUMN = 1;
     private static final Pattern ARTIFACT_SPLITTER = Pattern.compile(":");
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
     private static final Object[] COLUMN_NAMES = {"Files", "Delete?"};
-    public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
-    public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
-    public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
-    public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);
     private Project project;
     private String[] myFiles;
     private boolean[] myCheckedMarks;
@@ -122,10 +129,113 @@ public class CopyHippoSharedFiles extends AnAction {
             }
             // cleanup old stuff
             processJars(component, tomcatSharedDirectory, sharedDirectory, depMap);
+            // check if we need to create a project root file:
+            if (component.isCreateProjectFile()) {
+                // first check if we have an override:
+                final String projectRootDir = getDirectory(component.getProjectRootDirectory());
+                if (!Strings.isNullOrEmpty(projectRootDir)) {
+                    final File projectDirectory = new File(component.getProjectRootDirectory());
+                    if (!projectDirectory.exists()) {
+                        error("Cannot create project root file for tomcat: project root directory is defined but does not exists: " + projectRootDir);
+                    }
+                }
+                // check if tomcat root is defined:
+
+                final String tomcatRootDir = getDirectory(component.getTomcatRootDirectory());
+
+                if (Strings.isNullOrEmpty(tomcatRootDir)) {
+                    error("Cannot create project root file for tomcat: Tomcat root directory not defined (or not defined)");
+                    return;
+                }
+                final File tomcatDirectory = new File(tomcatRootDir);
+                if (!tomcatDirectory.exists()) {
+                    error("Cannot create project root file for tomcat: tomcat root directory does not exists: " + tomcatDirectory);
+                }
+
+
+                // check override:
+                String basePath = component.getProjectRootDirectory();
+                if (Strings.isNullOrEmpty(basePath)) {
+                    basePath = project.getBasePath();
+                }
+                if (Strings.isNullOrEmpty(basePath)) {
+                    error("Cannot create project root file, project path was empty or null");
+                    return;
+                }
+                // create a popup:                
+                showProjectRootPopup(basePath, tomcatDirectory);
+
+
+            }
 
 
         }
 
+    }
+
+    private void showProjectRootPopup(final String basePath, final File tomcatDirectory) {
+
+        final DialogBuilder dialogBuilder = new DialogBuilder(project);
+        dialogBuilder.setTitle("Create project file:");
+        final JPanel simplePanel = new JPanel();
+        simplePanel.add(new JLabel("Following path will be used as project base:\n" + basePath));
+        dialogBuilder.setCenterPanel(simplePanel);
+
+        final Action acceptAction = new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                // check if file exists and overwrite:
+                final String filePath = tomcatDirectory.getAbsolutePath() + File.separator + "bin" + File.separator + PROJECT_FILE;
+                info("Creating file:" + filePath);
+                final File file = new File(filePath);
+                FileWriter writer = null;
+                try {
+                    if (!file.exists()) {
+                        final boolean created = file.createNewFile();
+                        if (created) {
+                            info("Created file:" + filePath);
+                        }
+                    }
+                    writer = new FileWriter(file, false);
+                    writer.write(basePath);
+
+                } catch (IOException error) {
+                    error(error.getMessage());
+                } finally {
+                    try {
+                        if (writer != null) {
+                            writer.close();
+                        }
+                    } catch (IOException e1) {
+                        // ignore
+                    }
+                }
+
+
+                dialogBuilder.getDialogWrapper().close(DialogWrapper.OK_EXIT_CODE);
+            }
+        };
+        acceptAction.putValue(Action.NAME, "OK");
+        dialogBuilder.addAction(acceptAction);
+
+        dialogBuilder.addCancelAction();
+        dialogBuilder.showModal(true);
+    }
+
+    private String getDirectory(String input) {
+
+        // check if we have correct settings:
+        if (Strings.isNullOrEmpty(input)) {
+            //error("Directory not defined");
+            return null;
+        }
+
+        if (!input.endsWith(File.separator)) {
+            input = input + File.separator;
+        }
+        return input;
     }
 
     private void copyJars(final String tomcatSharedDirectory, final Map<String, String> depMap) {
