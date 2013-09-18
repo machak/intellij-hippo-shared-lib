@@ -70,7 +70,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         checkNullSave(element, CREATE_PROJECT_FILE_ATTRIBUTE, String.valueOf(createProjectFile));
         checkNullSave(element, SHOW_DIALOG_ATTRIBUTE, String.valueOf(showDialog));
         checkNullSave(element, TOMCAT_DIR_ATTRIBUTE, tomcatDirectory);
-        checkNullSave(element, TOMCAT_ROOT_DIR_ATTRIBUTE, tomcatDirectory);
+        checkNullSave(element, TOMCAT_ROOT_DIR_ATTRIBUTE, tomcatRootDirectory);
         checkNullSave(element, PROJECT_ROOT_FILE_ATTRIBUTE, projectRootDirectory);
         checkNullSave(element, DIST_FILE_ATTRIBUTE, distFile);
         return element;
