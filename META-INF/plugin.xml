@@ -14,7 +14,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
-      1.0.4 Config storage fixes (now within .idea folder), duplicate jar detection and filtering <br />
+      1.0.4 Config storage fixes (now within .idea folder), duplicate (shared) jar files detection and filtering <br />
       1.0.3 add option to create a file which contains project root path (used by auto export), see documentation<br />
       1.0.2 fix  path to distribution.xml (windows) <br />
       1.0.1 added confirmation dialog (when deleting files), optional path to distribution.xml<br />
