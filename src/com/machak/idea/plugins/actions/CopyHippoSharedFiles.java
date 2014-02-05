@@ -12,9 +12,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +33,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
@@ -56,12 +60,14 @@ import com.machak.idea.plugins.config.ApplicationComponent;
 import com.machak.idea.plugins.config.ProjectComponent;
 import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
+import com.machak.idea.plugins.util.VersionUtils;
 
 
 public class CopyHippoSharedFiles extends AnAction {
     /**
      * Name of the project files
      */
+    public static final CharMatcher VERSION_CHARS = CharMatcher.anyOf("0123456789-._");
     public static final String PROJECT_FILE = "hippo_project_directory.txt";
     public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
     public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
@@ -72,6 +78,7 @@ public class CopyHippoSharedFiles extends AnAction {
     private static final Pattern ARTIFACT_SPLITTER = Pattern.compile(":");
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
     private static final Object[] COLUMN_NAMES = {"Files", "Delete?"};
+    private static final Pattern PATTERN_JAR_EXTENSION = Pattern.compile("(?:(.*))(.jar)$");
     private Project project;
     private String[] myFiles;
     private boolean[] myCheckedMarks;
@@ -188,7 +195,7 @@ public class CopyHippoSharedFiles extends AnAction {
             public void actionPerformed(final ActionEvent e) {
                 // check if file exists and overwrite:
                 final String filePath = tomcatDirectory.getAbsolutePath() + File.separator + "bin" + File.separator + PROJECT_FILE;
-                info("Creating file:" + filePath);
+                info("Creating file: " + filePath);
                 final File file = new File(filePath);
                 FileWriter writer = null;
                 try {
@@ -240,6 +247,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private void copyJars(final String tomcatSharedDirectory, final Map<String, String> depMap) {
         final Module[] modules = ModuleManager.getInstance(project).getModules();
+        final Set<LibWrapper> jars = new HashSet<LibWrapper>();
         for (Module module : modules) {
             final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
             for (OrderEntry library : orderEntries) {
@@ -256,17 +264,93 @@ public class CopyHippoSharedFiles extends AnAction {
                         }
                         final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
                         if (jarFiles.length == 1) {
-                            try {
-                                copyFile(tomcatSharedDirectory, jarFiles[0]);
-                            } catch (IOException e) {
-                                error(String.format("Error while copy file%s", e.getMessage()));
-                            }
+                            final VirtualFile jarFile = jarFiles[0];
+                            final LibWrapper wrapper = new LibWrapper(artifactName, groupName, ourName, jarFile, module);
+                            jars.add(wrapper);
                         }
                     }
                 }
             }
+
         }
+        // copy files
+        final Collection<VirtualFile> filteredFiles = filterDuplicates(jars, depMap);
+        for (VirtualFile jar : filteredFiles) {
+            try {
+                copyFile(tomcatSharedDirectory, jar);
+            } catch (IOException e) {
+                error(String.format("Error while copy file%s", e.getMessage()));
+            }
+        }
+
     }
+
+    private Collection<VirtualFile> filterDuplicates(final Iterable<LibWrapper> libWrapperSet, final Map<String, String> depMap) {
+        final Map<String, VirtualFile> filtered = new HashMap<String, VirtualFile>();
+        // check if duplicate & log a warning
+        for (Map.Entry<String, String> dependency : depMap.entrySet()) {
+            final String name = dependency.getKey();
+            LibWrapper found = null;
+            String foundVersion = null;
+            for (LibWrapper wrapper : libWrapperSet) {
+                final String jarFile = wrapper.jarFile.getName();
+                if (jarFile.startsWith(name)) {
+                    if (found == null) {
+                        foundVersion = cleanupVersion(name, jarFile);
+                        found = wrapper;
+                        filtered.put(name, found.getJarFile());
+                        continue;
+                    }
+                    // check if version is same:
+                    final String version = cleanupVersion(name, jarFile);
+                    if (version.equals(foundVersion)) {
+                        continue;
+                    }
+                    // version difference, keep highest:
+                    final int highest = VersionUtils.compareVersionNumbers(foundVersion, version);
+                    final String foundModuleName = found.getModule().getName();
+                    final String currentModuleName = wrapper.getModule().getName();
+                    final String foundJarPath = found.getJarFile().getPath();
+                    // always remove:
+                    final VirtualFile remove = filtered.remove(name);
+                    // keep already found one::
+                    if (highest == 1) {
+                        filtered.put(name, found.getJarFile());
+                        // keep highest:
+                        error(String.format("Found duplicate jar: [%s] in module: [%s]", jarFile, currentModuleName));
+                        error(String.format("Keeping duplicate jar: [%s] from module: %s", found.getJarFile().getName(), foundModuleName));
+                    }
+                    // keep *new* found one:
+                    else if (highest == -1) {
+                        // swap and continue
+                        found = wrapper;
+                        foundVersion = version;
+                        filtered.put(name, found.getJarFile());
+                        error(String.format("Found duplicate jar: [%s] in module: [%s]", foundJarPath, foundModuleName));
+                        error(String.format("Keeping duplicate jar: [%s] from module: [%s]", found.getJarFile().getName(), currentModuleName));
+                    } else {
+                        // nothing we can do, just print error:
+                        error(String.format("Check versions of: [%s] from: [%s] and: [%s] form module: [%s]", foundJarPath, foundModuleName, jarFile, currentModuleName));
+                        filtered.put(name, wrapper.getJarFile());
+                    }
+                }
+            }
+        }
+        return filtered.values();
+    }
+
+    private String cleanupVersion(final String name, final String jarFile) {
+        String version = jarFile;
+        if (version.startsWith(name)) {
+            version = version.substring(name.length(), jarFile.length());
+            version = PATTERN_JAR_EXTENSION.matcher(version).replaceAll("$1");
+            version = VERSION_CHARS.retainFrom(version);
+
+        }
+        return version;
+
+    }
+
 
     private String extractDistributionFilePath(final Project project, final ApplicationComponent component) {
         final String distributionFilePath;

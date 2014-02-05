@@ -6,7 +6,7 @@
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      1.0.4 Config storage fixes (now within .idea folder), duplicate jar detection and filtering <br />
       1.0.3 add option to create a file which contains project root path (used by auto export), see documentation<br />
       1.0.2 fix  path to distribution.xml (windows) <br />
       1.0.1 added confirmation dialog (when deleting files), optional path to distribution.xml<br />
