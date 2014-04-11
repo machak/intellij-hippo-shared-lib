@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
@@ -50,14 +50,17 @@ public class PluginConfiguration extends BaseConfigurable {
     private JLabel tomcatRootLabel;
     private TextFieldWithBrowseButton tomcatRootDirectory;
     private TextFieldWithBrowseButton projectRootDirectory;
+    private TextFieldWithBrowseButton log4jLocation;
+    private JCheckBox copyLog4j;
 
 
     public PluginConfiguration() {
 
-        createDirListener(tomcatDirectory);
-        createDirListener(distFile);
-        createDirListener(tomcatRootDirectory);
-        createDirListener(projectRootDirectory);
+        createDirListener(tomcatDirectory, false, true);
+        createDirListener(distFile, true, false);
+        createDirListener(tomcatRootDirectory, false, true);
+        createDirListener(log4jLocation, true, false);
+        createDirListener(projectRootDirectory, false, true);
 
         explanationLabel.setText("<html>" +
                 "<p>If selected, all *jar files* within above defined directory will be *deleted*,</p>" +
@@ -75,8 +78,9 @@ public class PluginConfiguration extends BaseConfigurable {
                 "</html>");
     }
 
-    private void createDirListener(final TextFieldWithBrowseButton button) {
+    private void createDirListener(final TextFieldWithBrowseButton button, final boolean chooseFiles, final boolean chooseFolders) {
         final DocumentListener listener = new DocumentAdapter() {
+            @Override
             protected void textChanged(DocumentEvent documentEvent) {
                 button.getText();
             }
@@ -84,8 +88,9 @@ public class PluginConfiguration extends BaseConfigurable {
         button.getChildComponent().getDocument().addDocumentListener(listener);
         button.setTextFieldPreferredWidth(50);
         button.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                chooseFolder(button, false);
+                chooseFolder(button, chooseFiles, chooseFolders);
             }
         });
     }
@@ -123,6 +128,7 @@ public class PluginConfiguration extends BaseConfigurable {
         final boolean changed = deleteAllJars.isSelected() != component.isDeleteAllJars()
                 || showConfirmationDialog.isSelected() != component.isShowDialog()
                 || createProjectFile.isSelected() != component.isCreateProjectFile()
+                || copyLog4j.isSelected() != component.isCopyLog4J()
                 || copyOtherJars.isSelected() != component.isCopyOtherJars();
         if (changed) {
             return true;
@@ -137,6 +143,12 @@ public class PluginConfiguration extends BaseConfigurable {
         if (isTextChanged(tomcatRootText, tomcatRootDir)) {
             return true;
         }
+        final String logText = log4jLocation.getText();
+        final String logDir = component.getLog4JDirectory();
+        if (isTextChanged(logText, logDir)) {
+            return true;
+        }
+
         final String projectRootText = projectRootDirectory.getText();
         final String projectRootDir = component.getProjectRootDirectory();
         if (isTextChanged(projectRootText, projectRootDir)) {
@@ -161,6 +173,8 @@ public class PluginConfiguration extends BaseConfigurable {
     }
 
     public void storeDataTo(ApplicationComponent component) {
+        component.setCopyLog4J(copyLog4j.isSelected());
+        component.setLog4JDirectory(log4jLocation.getText());
         component.setDeleteAllJars(deleteAllJars.isSelected());
         component.setCopyOtherJars(copyOtherJars.isSelected());
         component.setShowDialog(showConfirmationDialog.isSelected());
@@ -178,12 +192,14 @@ public class PluginConfiguration extends BaseConfigurable {
         showConfirmationDialog.setSelected(component.isShowDialog());
         tomcatDirectory.setText(component.getTomcatDirectory());
         tomcatRootDirectory.setText(component.getTomcatRootDirectory());
+        log4jLocation.setText(component.getLog4JDirectory());
+        copyLog4j.setSelected(component.isCopyLog4J());
         projectRootDirectory.setText(component.getProjectRootDirectory());
         distFile.setText(component.getDistFile());
     }
 
     public Project getProject(final Component component) {
-        Project project = PlatformDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(component));
+        Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(component));
         if (project != null) {
             return project;
         }
@@ -198,18 +214,20 @@ public class PluginConfiguration extends BaseConfigurable {
     //
     //############################################
 
-    private void chooseFolder(final TextAccessor field, final boolean chooseFiles) {
-        final FileChooserDescriptor descriptor = new FileChooserDescriptor(chooseFiles, !chooseFiles, false, false, false, false) {
+    private void chooseFolder(final TextAccessor field, final boolean chooseFiles, final boolean chooseFolders) {
+        final FileChooserDescriptor descriptor = new FileChooserDescriptor(chooseFiles, chooseFolders, false, false, false, false) {
+            @Override
             public String getName(VirtualFile virtualFile) {
                 return virtualFile.getName();
             }
 
+            @Override
             @Nullable
             public String getComment(VirtualFile virtualFile) {
                 return virtualFile.getPresentableUrl();
             }
         };
-        descriptor.setTitle("Select Project Destination Folder");
+        descriptor.setTitle("Select  Folder");
 
         final String selectedPath = field.getText();
         final VirtualFile preselectedFolder = LocalFileSystem.getInstance().findFileByPath(selectedPath);

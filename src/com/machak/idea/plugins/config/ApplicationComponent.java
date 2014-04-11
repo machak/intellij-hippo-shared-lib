@@ -35,11 +35,15 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
     public static final String TOMCAT_DIR_ATTRIBUTE = "tomcatDirectory";
     public static final String TOMCAT_ROOT_DIR_ATTRIBUTE = "tomcatRootDirectory";
     public static final String DIST_FILE_ATTRIBUTE = "distFile";
+    public static final String LOG_4J_COPY_ATTRIBUTE = "log4jCopy";
+
     public static final String CREATE_PROJECT_FILE_ATTRIBUTE = "createProjectFile";
     public static final String PROJECT_ROOT_FILE_ATTRIBUTE = "projectRootFile";
     public static final String CONFIGURATION_CONFIG_ELEMENT = "hippo-shared-config";
     private boolean deleteAllJars;
     private boolean copyOtherJars;
+    private boolean copyLog4J;
+    private String log4JDirectory;
     private String tomcatDirectory;
     private String tomcatRootDirectory;
     private String projectRootDirectory;
@@ -73,7 +77,24 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         checkNullSave(element, TOMCAT_ROOT_DIR_ATTRIBUTE, tomcatRootDirectory);
         checkNullSave(element, PROJECT_ROOT_FILE_ATTRIBUTE, projectRootDirectory);
         checkNullSave(element, DIST_FILE_ATTRIBUTE, distFile);
+        checkNullSave(element, LOG_4J_COPY_ATTRIBUTE, log4JDirectory);
         return element;
+    }
+
+    public boolean isCopyLog4J() {
+        return copyLog4J;
+    }
+
+    public void setCopyLog4J(final boolean copyLog4J) {
+        this.copyLog4J = copyLog4J;
+    }
+
+    public String getLog4JDirectory() {
+        return log4JDirectory;
+    }
+
+    public void setLog4JDirectory(final String log4JDirectory) {
+        this.log4JDirectory = log4JDirectory;
     }
 
     @Override
@@ -82,6 +103,7 @@ public class ApplicationComponent implements com.intellij.openapi.components.App
         if (StringUtils.isNotBlank(copyJars)) {
             copyOtherJars = Boolean.valueOf(copyJars);
         }
+
         String deleteJars = element.getAttributeValue(DELETE_JARS_ATTRIBUTE);
         if (StringUtils.isNotBlank(deleteJars)) {
             deleteAllJars = Boolean.valueOf(deleteJars);

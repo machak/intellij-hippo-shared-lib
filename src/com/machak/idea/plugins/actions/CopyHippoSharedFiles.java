@@ -34,14 +34,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.io.ByteSource;
+import com.google.common.io.Resources;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -70,6 +73,7 @@ public class CopyHippoSharedFiles extends AnAction {
     public static final CharMatcher VERSION_CHARS = CharMatcher.anyOf("0123456789-._");
     public static final String PROJECT_FILE = "hippo_project_directory.txt";
     public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
+    public static final String DEFAULT_LOG4j_FILE_PATH = "conf" + File.separator + "log4j-dev.xml";
     public static final NotificationGroup log = NotificationGroup.logOnlyGroup("Hippo shared jars");
     public static final NotificationGroup ERROR_GROUP = new NotificationGroup("Hippo shared lib error messages", NotificationDisplayType.BALLOON, true);
     public static final NotificationGroup INFO_GROUP = new NotificationGroup("Hippo shared lib info messages", NotificationDisplayType.NONE, false);
@@ -83,10 +87,11 @@ public class CopyHippoSharedFiles extends AnAction {
     private String[] myFiles;
     private boolean[] myCheckedMarks;
 
+    @Override
     public void actionPerformed(AnActionEvent event) {
 
 
-        project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
+        project = CommonDataKeys.PROJECT.getData(event.getDataContext());
         if (project != null) {
 
 
@@ -126,6 +131,38 @@ public class CopyHippoSharedFiles extends AnAction {
             if (!distFile.exists()) {
                 error("Missing dist file: " + distributionFilePath);
                 return;
+            }
+
+
+            //############################################
+            // CHECK FOR LOG4J FILE
+            //############################################
+
+            if (component.isCopyLog4J()) {
+                final String logFilePath = extractLog4jFilePath(project, component);
+                final File logFile = new File(logFilePath);
+                if (!logFile.exists()) {
+                    error("Missing log4j file : " + logFilePath);
+                }
+                final String tomcatRootDir = getDirectory(component.getTomcatRootDirectory());
+
+                if (Strings.isNullOrEmpty(tomcatRootDir)) {
+                    error("Cannot copy log4j file");
+
+                } else {
+
+                    final String logText = readText(logFile);
+                    if (logText != null) {
+                        final String filePath = tomcatRootDir.endsWith(File.separator)
+                                ? tomcatRootDir + "conf" + File.separator + "log4j.xml" :
+                                tomcatRootDir + File.separator + "conf" + File.separator + "log4j.xml";
+
+                        createAndWriteFile(filePath, logText);
+                    }
+
+                }
+
+
             }
 
 
@@ -195,30 +232,7 @@ public class CopyHippoSharedFiles extends AnAction {
             public void actionPerformed(final ActionEvent e) {
                 // check if file exists and overwrite:
                 final String filePath = tomcatDirectory.getAbsolutePath() + File.separator + "bin" + File.separator + PROJECT_FILE;
-                info("Creating file: " + filePath);
-                final File file = new File(filePath);
-                FileWriter writer = null;
-                try {
-                    if (!file.exists()) {
-                        final boolean created = file.createNewFile();
-                        if (created) {
-                            info("Created file:" + filePath);
-                        }
-                    }
-                    writer = new FileWriter(file, false);
-                    writer.write(basePath);
-
-                } catch (IOException error) {
-                    error(error.getMessage());
-                } finally {
-                    try {
-                        if (writer != null) {
-                            writer.close();
-                        }
-                    } catch (IOException e1) {
-                        // ignore
-                    }
-                }
+                createAndWriteFile(filePath, basePath);
 
 
                 dialogBuilder.getDialogWrapper().close(DialogWrapper.OK_EXIT_CODE);
@@ -229,6 +243,44 @@ public class CopyHippoSharedFiles extends AnAction {
 
         dialogBuilder.addCancelAction();
         dialogBuilder.showModal(true);
+    }
+
+
+    public static String readText(final File file) {
+        try {
+            final ByteSource source = Resources.asByteSource(file.toURI().toURL());
+            return source.asCharSource(Charsets.UTF_8).read();
+        } catch (IOException e) {
+
+        }
+        return null;
+    }
+
+    private void createAndWriteFile(final String filePath, final String content) {
+        info("Creating file: " + filePath);
+        final File file = new File(filePath);
+        FileWriter writer = null;
+        try {
+            if (!file.exists()) {
+                final boolean created = file.createNewFile();
+                if (created) {
+                    info("Created file:" + filePath);
+                }
+            }
+            writer = new FileWriter(file, false);
+            writer.write(content);
+
+        } catch (IOException error) {
+            error(error.getMessage());
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e1) {
+                // ignore
+            }
+        }
     }
 
     private String getDirectory(String input) {
@@ -349,6 +401,21 @@ public class CopyHippoSharedFiles extends AnAction {
         }
         return version;
 
+    }
+
+    private String extractLog4jFilePath(final Project project, final ApplicationComponent component) {
+        final String logFilePath;
+        if (Strings.isNullOrEmpty(component.getLog4JDirectory())) {
+            final String basePath = project.getBasePath();
+            if (basePath.endsWith(File.separator)) {
+                logFilePath = project.getBasePath() + DEFAULT_LOG4j_FILE_PATH;
+            } else {
+                logFilePath = project.getBasePath() + File.separator + DEFAULT_LOG4j_FILE_PATH;
+            }
+        } else {
+            logFilePath = component.getLog4JDirectory();
+        }
+        return logFilePath;
     }
 
 
