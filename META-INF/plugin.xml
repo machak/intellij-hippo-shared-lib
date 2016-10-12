@@ -35,18 +35,26 @@
 
   <application-components>
     <component>
-      <implementation-class>com.machak.idea.plugins.config.ApplicationComponent</implementation-class>
+      <implementation-class>com.machak.idea.plugins.config.HippoSharedApplicationConfig</implementation-class>
     </component>
   </application-components>
   <project-components>
     <component>
-      <implementation-class>com.machak.idea.plugins.config.ProjectComponent</implementation-class>
+      <implementation-class>com.machak.idea.plugins.config.HippoSharedProjectSettings</implementation-class>
     </component>
   </project-components>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable instance="com.machak.idea.plugins.config.HippoSharedApplicationConfig"
+                             id="hipposhareddir"/>
+    <projectConfigurable instance="com.machak.idea.plugins.config.HippoSharedProjectSettings"
+                         id="projecthipposhareddir"/>
+    <!--    <projectService serviceImplementation="com.machak.idea.plugins.config.HippoSharedProjectSettings" />
+        <projectService serviceImplementation="com.machak.idea.plugins.config.HippoSharedApplicationConfig" />-->
+  </extensions>
 
   <actions>
     <action icon="/icons/hippo_copy.png" id="copy-hippo-shared-files" class="com.machak.idea.plugins.actions.CopyHippoSharedFiles" text="CopyHippoSharedFiles" description="Copy hippo shared files into tomcat shared directory">
-      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <add-to-group group-id="OtherMenu" anchor="last"/>
       <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl H" second-keystroke="shift ctrl alt H"/>
     </action>
   </actions>

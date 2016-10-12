@@ -59,8 +59,9 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
-import com.machak.idea.plugins.config.ApplicationComponent;
-import com.machak.idea.plugins.config.ProjectComponent;
+import com.machak.idea.plugins.config.HippoSharedApplicationConfig;
+import com.machak.idea.plugins.config.HippoSharedProjectSettings;
+import com.machak.idea.plugins.config.StorageState;
 import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.util.VersionUtils;
@@ -96,10 +97,10 @@ public class CopyHippoSharedFiles extends AnAction {
 
 
             // project settings have higher priority (override):
-            ApplicationComponent component = project.getComponent(ProjectComponent.class);
+            HippoSharedApplicationConfig component = project.getComponent(HippoSharedProjectSettings.class);
             if (notValid(component)) {
                 // try to fetch application (global) settings:
-                component = ApplicationManager.getApplication().getComponent(ApplicationComponent.class);
+                component = ApplicationManager.getApplication().getComponent(HippoSharedApplicationConfig.class);
                 if (notValid(component)) {
                     if (component == null) {
                         error("Couldn't read settings (project nor application wide)");
@@ -108,7 +109,8 @@ public class CopyHippoSharedFiles extends AnAction {
                 }
             }
 
-            String tomcatSharedDirectory = component.getTomcatDirectory();
+            final StorageState state = component.getState();
+            String tomcatSharedDirectory = state.getTomcatDirectory();
             // check if we have correct settings:
             if (Strings.isNullOrEmpty(tomcatSharedDirectory)) {
                 error("Tomcat shared library not defined");
@@ -138,13 +140,13 @@ public class CopyHippoSharedFiles extends AnAction {
             // CHECK FOR LOG4J FILE
             //############################################
 
-            if (component.isCopyLog4J()) {
+            if (state.isCopyLog4J()) {
                 final String logFilePath = extractLog4jFilePath(project, component);
                 final File logFile = new File(logFilePath);
                 if (!logFile.exists()) {
                     error("Missing log4j file : " + logFilePath);
                 }
-                final String tomcatRootDir = getDirectory(component.getTomcatRootDirectory());
+                final String tomcatRootDir = getDirectory(state.getTomcatRootDirectory());
 
                 if (Strings.isNullOrEmpty(tomcatRootDir)) {
                     error("Cannot copy log4j file");
@@ -174,18 +176,18 @@ public class CopyHippoSharedFiles extends AnAction {
             // cleanup old stuff
             processJars(component, tomcatSharedDirectory, sharedDirectory, depMap);
             // check if we need to create a project root file:
-            if (component.isCreateProjectFile()) {
+            if (state.isCreateProjectFile()) {
                 // first check if we have an override:
-                final String projectRootDir = getDirectory(component.getProjectRootDirectory());
+                final String projectRootDir = getDirectory(state.getProjectRootDirectory());
                 if (!Strings.isNullOrEmpty(projectRootDir)) {
-                    final File projectDirectory = new File(component.getProjectRootDirectory());
+                    final File projectDirectory = new File(state.getProjectRootDirectory());
                     if (!projectDirectory.exists()) {
                         error("Cannot create project root file for tomcat: project root directory is defined but does not exists: " + projectRootDir);
                     }
                 }
                 // check if tomcat root is defined:
 
-                final String tomcatRootDir = getDirectory(component.getTomcatRootDirectory());
+                final String tomcatRootDir = getDirectory(state.getTomcatRootDirectory());
 
                 if (Strings.isNullOrEmpty(tomcatRootDir)) {
                     error("Cannot create project root file for tomcat: Tomcat root directory not defined (or not defined)");
@@ -198,7 +200,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
 
                 // check override:
-                String basePath = component.getProjectRootDirectory();
+                String basePath = state.getProjectRootDirectory();
                 if (Strings.isNullOrEmpty(basePath)) {
                     basePath = project.getBasePath();
                 }
@@ -403,33 +405,35 @@ public class CopyHippoSharedFiles extends AnAction {
 
     }
 
-    private String extractLog4jFilePath(final Project project, final ApplicationComponent component) {
+    private String extractLog4jFilePath(final Project project, final HippoSharedApplicationConfig component) {
         final String logFilePath;
-        if (Strings.isNullOrEmpty(component.getLog4JDirectory())) {
+        final StorageState state = component.getState();
+        if (Strings.isNullOrEmpty(state.getLog4JDirectory())) {
             final String basePath = project.getBasePath();
-            if (basePath.endsWith(File.separator)) {
+            if (basePath != null && basePath.endsWith(File.separator)) {
                 logFilePath = project.getBasePath() + DEFAULT_LOG4j_FILE_PATH;
             } else {
                 logFilePath = project.getBasePath() + File.separator + DEFAULT_LOG4j_FILE_PATH;
             }
         } else {
-            logFilePath = component.getLog4JDirectory();
+            logFilePath = state.getLog4JDirectory();
         }
         return logFilePath;
     }
 
 
-    private String extractDistributionFilePath(final Project project, final ApplicationComponent component) {
+    private String extractDistributionFilePath(final Project project, final HippoSharedApplicationConfig component) {
         final String distributionFilePath;
-        if (Strings.isNullOrEmpty(component.getDistFile())) {
+        final StorageState state = component.getState();
+        if (Strings.isNullOrEmpty(state.getDistFile())) {
             final String basePath = project.getBasePath();
-            if (basePath.endsWith(File.separator)) {
+            if (basePath != null && basePath.endsWith(File.separator)) {
                 distributionFilePath = project.getBasePath() + DEFAULT_DIST_FILE_PATH;
             } else {
                 distributionFilePath = project.getBasePath() + File.separator + DEFAULT_DIST_FILE_PATH;
             }
         } else {
-            distributionFilePath = component.getDistFile();
+            distributionFilePath = state.getDistFile();
         }
         return distributionFilePath;
     }
@@ -455,7 +459,7 @@ public class CopyHippoSharedFiles extends AnAction {
         }
     }
 
-    private Map<String, String> extractDependencies(final ApplicationComponent component, final File distFile) {
+    private Map<String, String> extractDependencies(final HippoSharedApplicationConfig component, final File distFile) {
         final Map<String, String> depMap = new HashMap<String, String>();
 
         try {
@@ -467,10 +471,11 @@ public class CopyHippoSharedFiles extends AnAction {
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
             final List<DependencySet> dependencySet = dependencySets.getDependencySet();
 
+            final StorageState state = component.getState();
             for (DependencySet set : dependencySet) {
                 final String outputDirectory = set.getOutputDirectory();
                 boolean accept = outputDirectory.equals("/shared/lib");
-                if (!accept && component.isCopyOtherJars()) {
+                if (!accept && state.isCopyOtherJars()) {
                     accept = outputDirectory.equals("/common/lib");
                 }
                 if (accept) {
@@ -490,11 +495,15 @@ public class CopyHippoSharedFiles extends AnAction {
         return depMap;
     }
 
-    private void processJars(final ApplicationComponent component, final String tomcatSharedDirectory, final File sharedDirectory, final Map<String, String> depMap) {
+    private void processJars(final HippoSharedApplicationConfig component, final String tomcatSharedDirectory, final File sharedDirectory, final Map<String, String> depMap) {
 
         final FilenameFilter fileFilter = createJarsFilter(component, depMap);
+        final StorageState state = component.getState();
         final File[] jars = sharedDirectory.listFiles(fileFilter);
-        if (!component.isShowDialog()) {
+        if (jars == null) {
+            return;
+        }
+        if (!state.isShowDialog()) {
             for (File jar : jars) {
                 deleteFile(jar);
             }
@@ -560,38 +569,30 @@ public class CopyHippoSharedFiles extends AnAction {
         }
     }
 
-    private FilenameFilter createJarsFilter(final ApplicationComponent component, final Map<String, String> depMap) {
+    private FilenameFilter createJarsFilter(final HippoSharedApplicationConfig component, final Map<String, String> depMap) {
         final FilenameFilter fileFilter;
-        if (component.isDeleteAllJars()) {
-            final FilenameFilter allJarsFilter = new FilenameFilter() {
-                @Override
-                public boolean accept(final File file, final String name) {
-                    return name.endsWith(".jar");
-                }
-            };
-            fileFilter = allJarsFilter;
+        final StorageState state = component.getState();
+        if (state.isDeleteAllJars()) {
+            fileFilter = (file, name) -> name.endsWith(".jar");
         } else {
-            fileFilter = new FilenameFilter() {
-                @Override
-                public boolean accept(final File file, final String name) {
-                    final boolean jar = name.endsWith(".jar");
-                    if (!jar) {
-                        return false;
-                    }
-                    for (String prefix : depMap.keySet()) {
-                        if (name.startsWith(prefix)) {
-                            return true;
-                        }
-                    }
+            fileFilter = (file, name) -> {
+                final boolean jar = name.endsWith(".jar");
+                if (!jar) {
                     return false;
                 }
+                for (String prefix : depMap.keySet()) {
+                    if (name.startsWith(prefix)) {
+                        return true;
+                    }
+                }
+                return false;
             };
         }
         return fileFilter;
     }
 
-    private boolean notValid(final ApplicationComponent component) {
-        return component == null || Strings.isNullOrEmpty(component.getTomcatDirectory());
+    private boolean notValid(final HippoSharedApplicationConfig component) {
+        return component == null || Strings.isNullOrEmpty(component.getState().getTomcatDirectory());
     }
 
     private void error(final String message) {

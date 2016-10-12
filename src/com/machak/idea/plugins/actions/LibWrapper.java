@@ -27,17 +27,7 @@ public class LibWrapper {
         this.module = module;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("LibWrapper{");
-        sb.append("artifactName='").append(artifactName).append('\'');
-        sb.append(", groupName='").append(groupName).append('\'');
-        sb.append(", ourName='").append(ourName).append('\'');
-        sb.append(", jarFile=").append(jarFile);
-        sb.append(", module=").append(module);
-        sb.append('}');
-        return sb.toString();
-    }
+
 
     public String getArtifactName() {
         return artifactName;
@@ -57,5 +47,16 @@ public class LibWrapper {
 
     public Module getModule() {
         return module;
+    }
+
+    @Override
+    public String toString() {
+        final String sb = "LibWrapper{" + "artifactName='" + artifactName + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", ourName='" + ourName + '\'' +
+                ", jarFile=" + jarFile +
+                ", module=" + module +
+                '}';
+        return sb;
     }
 }

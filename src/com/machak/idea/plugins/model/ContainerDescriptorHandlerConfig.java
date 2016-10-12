@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright 2013 m.milicevic (http://www.machak.com)
  * http://www.apache.org/licenses/LICENSE-2.0
