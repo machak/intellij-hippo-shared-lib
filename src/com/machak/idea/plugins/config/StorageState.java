@@ -6,31 +6,28 @@
 package com.machak.idea.plugins.config;
 
 
-import com.intellij.util.xmlb.annotations.Attribute;
-import com.intellij.util.xmlb.annotations.Property;
-
 public class StorageState {
-    @Attribute("deleteAllJars")
-    private boolean deleteAllJars;
-    @Attribute("copyOtherJars")
-    private boolean copyOtherJars;
-    @Attribute("copyLog4J")
-    private boolean copyLog4J;
-    @Attribute("showDialog")
-    private boolean showDialog;
-    @Attribute("createProjectFile")
-    private boolean createProjectFile;
+    //@Attribute("deleteAllJars")
+    public boolean deleteAllJars;
+    //@Attribute("copyOtherJars")
+    public boolean copyOtherJars;
+    //@Attribute("copyLog4J")
+    public boolean copyLog4J;
+    //@Attribute("showDialog")
+    public boolean showDialog;
+    //@Attribute("createProjectFile")
+    public boolean createProjectFile;
 
-    @Property
-    private String log4JDirectory;
-    @Property
-    private String tomcatDirectory;
-    @Property
-    private String tomcatRootDirectory;
-    @Property
-    private String projectRootDirectory;
-    @Property
-    private String distFile;
+    //@Tag("log4JDirectory")
+    public String log4JDirectory;
+    //@Tag("tomcatDirectory")
+    public String tomcatDirectory;
+    //@Tag("tomcatRootDirectory")
+    public String tomcatRootDirectory;
+    //@Tag("projectRootDirectory")
+    public String projectRootDirectory;
+    //@Tag("distFile")
+    public String distFile;
 
 
     public boolean isDeleteAllJars() {
@@ -112,4 +109,5 @@ public class StorageState {
     public void setCreateProjectFile(final boolean createProjectFile) {
         this.createProjectFile = createProjectFile;
     }
+
 }

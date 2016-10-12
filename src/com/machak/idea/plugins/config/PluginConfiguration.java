@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.google.common.base.Strings;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -121,8 +122,7 @@ public class PluginConfiguration extends BaseConfigurable {
     public void disposeUIResources() {
     }
 
-    public boolean isModified(HippoSharedApplicationConfig component) {
-        final StorageState state = component.getState();
+    public boolean isModified(final StorageState state) {
         final boolean changed = deleteAllJars.isSelected() != state.isDeleteAllJars()
                 || showConfirmationDialog.isSelected() != state.isShowDialog()
                 || createProjectFile.isSelected() != state.isCreateProjectFile()
@@ -160,18 +160,15 @@ public class PluginConfiguration extends BaseConfigurable {
 
 
     private boolean isTextChanged(final String text, final String dir) {
-        if (text == null) {
-            if (dir == null) {
-                return false;
-            }
+        if (Strings.isNullOrEmpty(text) && Strings.isNullOrEmpty(dir)) {
+            return false;
         } else if (text.equals(dir)) {
             return false;
         }
         return true;
     }
 
-    public void storeDataTo(HippoSharedApplicationConfig component) {
-        final StorageState state = component.getState();
+    public void storeDataTo(final StorageState state) {
         state.setCopyLog4J(copyLog4j.isSelected());
         state.setLog4JDirectory(log4jLocation.getText());
         state.setDeleteAllJars(deleteAllJars.isSelected());
@@ -185,8 +182,7 @@ public class PluginConfiguration extends BaseConfigurable {
 
     }
 
-    public void readDataFrom(HippoSharedApplicationConfig component) {
-        final StorageState state = component.getState();
+    public void readDataFrom(final StorageState state) {
         deleteAllJars.setSelected(state.isDeleteAllJars());
         copyOtherJars.setSelected(state.isCopyOtherJars());
         createProjectFile.setSelected(state.isCreateProjectFile());

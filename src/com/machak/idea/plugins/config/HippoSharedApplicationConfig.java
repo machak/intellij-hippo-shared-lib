@@ -10,26 +10,31 @@ package com.machak.idea.plugins.config;
 
 import javax.swing.JComponent;
 
+import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.RoamingType;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-@State(name = "HippoSharedApplicationConfig", storages = {@Storage(id = "dir", file = "HippoSharedApplicationConfig.xml", roamingType = RoamingType.DEFAULT, scheme = StorageScheme.DIRECTORY_BASED)})
-public class HippoSharedApplicationConfig implements com.intellij.openapi.components.ApplicationComponent, Configurable, PersistentStateComponent<StorageState> {
+@State(name = "HippoSharedApplicationConfig", storages = {@Storage(
+        file = StoragePathMacros.APP_CONFIG + "/HippoSharedApplicationConfig.xml",
+        scheme = StorageScheme.DIRECTORY_BASED,
+        id = "HippoSharedApplicationConfig"
+)
 
-    private StorageState storageState;
+})
+public class HippoSharedApplicationConfig implements ApplicationComponent, Configurable, PersistentStateComponent<StorageState> {
 
     private PluginConfiguration configPane;
+    private StorageState state;
 
 
     @Override
@@ -45,8 +50,6 @@ public class HippoSharedApplicationConfig implements com.intellij.openapi.compon
     public String getComponentName() {
         return "HippoSharedLibsComponent";
     }
-
-
 
 
     @Nls
@@ -72,20 +75,20 @@ public class HippoSharedApplicationConfig implements com.intellij.openapi.compon
 
     @Override
     public boolean isModified() {
-        return configPane != null && configPane.isModified(this);
+        return configPane != null && configPane.isModified(getState());
     }
 
     @Override
     public void apply() throws ConfigurationException {
         if (configPane != null) {
-            configPane.storeDataTo(this);
+            configPane.storeDataTo(getState());
         }
     }
 
     @Override
     public void reset() {
         if (configPane != null) {
-            configPane.readDataFrom(this);
+            configPane.readDataFrom(getState());
         }
     }
 
@@ -98,14 +101,14 @@ public class HippoSharedApplicationConfig implements com.intellij.openapi.compon
     @NotNull
     @Override
     public StorageState getState() {
-        if (storageState == null) {
-            storageState = new StorageState();
+        if (state == null) {
+            state = new StorageState();
         }
-        return storageState;
+        return state;
     }
 
     @Override
     public void loadState(final StorageState storageState) {
-        XmlSerializerUtil.copyBean(storageState, this.storageState);
+        state = storageState;
     }
 }

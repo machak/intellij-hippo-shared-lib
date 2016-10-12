@@ -45,11 +45,10 @@
   </project-components>
   <extensions defaultExtensionNs="com.intellij">
     <applicationConfigurable instance="com.machak.idea.plugins.config.HippoSharedApplicationConfig"
-                             id="hipposhareddir"/>
+    />
     <projectConfigurable instance="com.machak.idea.plugins.config.HippoSharedProjectSettings"
-                         id="projecthipposhareddir"/>
-    <!--    <projectService serviceImplementation="com.machak.idea.plugins.config.HippoSharedProjectSettings" />
-        <projectService serviceImplementation="com.machak.idea.plugins.config.HippoSharedApplicationConfig" />-->
+    />
+
   </extensions>
 
   <actions>

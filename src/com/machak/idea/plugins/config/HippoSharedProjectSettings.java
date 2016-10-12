@@ -6,13 +6,19 @@
 package com.machak.idea.plugins.config;
 
 
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StoragePathMacros;
+import com.intellij.openapi.components.StorageScheme;
 
 import org.jetbrains.annotations.Nls;
 
-@State(name = "HippoSharedProjectSettings", storages = @Storage("HippoSharedProjectSettings.xml"))
-public class HippoSharedProjectSettings extends HippoSharedApplicationConfig implements com.intellij.openapi.components.ProjectComponent {
+@State(name = "HippoSharedProjectSettings", storages = @Storage(
+        file = StoragePathMacros.PROJECT_CONFIG_DIR + "/HippoSharedProjectSettings.xml",
+        scheme = StorageScheme.DIRECTORY_BASED,
+        id = "HippoSharedProjectSettings"))
+public class HippoSharedProjectSettings extends HippoSharedApplicationConfig implements ProjectComponent {
 
 
     @Override
