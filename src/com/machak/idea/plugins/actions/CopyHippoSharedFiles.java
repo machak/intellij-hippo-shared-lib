@@ -59,6 +59,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
+import com.machak.idea.plugins.config.BaseConfig;
 import com.machak.idea.plugins.config.HippoSharedApplicationConfig;
 import com.machak.idea.plugins.config.HippoSharedProjectSettings;
 import com.machak.idea.plugins.config.StorageState;
@@ -97,7 +98,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
 
             // project settings have higher priority (override):
-            HippoSharedApplicationConfig component = project.getComponent(HippoSharedProjectSettings.class);
+            BaseConfig component = project.getComponent(HippoSharedProjectSettings.class);
             if (notValid(component)) {
                 // try to fetch application (global) settings:
                 component = ApplicationManager.getApplication().getComponent(HippoSharedApplicationConfig.class);
@@ -405,7 +406,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     }
 
-    private String extractLog4jFilePath(final Project project, final HippoSharedApplicationConfig component) {
+    private String extractLog4jFilePath(final Project project, final BaseConfig component) {
         final String logFilePath;
         final StorageState state = component.getState();
         if (Strings.isNullOrEmpty(state.getLog4JDirectory())) {
@@ -422,7 +423,7 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
 
-    private String extractDistributionFilePath(final Project project, final HippoSharedApplicationConfig component) {
+    private String extractDistributionFilePath(final Project project, final BaseConfig component) {
         final String distributionFilePath;
         final StorageState state = component.getState();
         if (Strings.isNullOrEmpty(state.getDistFile())) {
@@ -459,7 +460,7 @@ public class CopyHippoSharedFiles extends AnAction {
         }
     }
 
-    private Map<String, String> extractDependencies(final HippoSharedApplicationConfig component, final File distFile) {
+    private Map<String, String> extractDependencies(final BaseConfig component, final File distFile) {
         final Map<String, String> depMap = new HashMap<String, String>();
 
         try {
@@ -495,7 +496,7 @@ public class CopyHippoSharedFiles extends AnAction {
         return depMap;
     }
 
-    private void processJars(final HippoSharedApplicationConfig component, final String tomcatSharedDirectory, final File sharedDirectory, final Map<String, String> depMap) {
+    private void processJars(final BaseConfig component, final String tomcatSharedDirectory, final File sharedDirectory, final Map<String, String> depMap) {
 
         final FilenameFilter fileFilter = createJarsFilter(component, depMap);
         final StorageState state = component.getState();
@@ -569,7 +570,7 @@ public class CopyHippoSharedFiles extends AnAction {
         }
     }
 
-    private FilenameFilter createJarsFilter(final HippoSharedApplicationConfig component, final Map<String, String> depMap) {
+    private FilenameFilter createJarsFilter(final BaseConfig component, final Map<String, String> depMap) {
         final FilenameFilter fileFilter;
         final StorageState state = component.getState();
         if (state.isDeleteAllJars()) {
@@ -591,7 +592,7 @@ public class CopyHippoSharedFiles extends AnAction {
         return fileFilter;
     }
 
-    private boolean notValid(final HippoSharedApplicationConfig component) {
+    private boolean notValid(final BaseConfig component) {
         return component == null || Strings.isNullOrEmpty(component.getState().getTomcatDirectory());
     }
 

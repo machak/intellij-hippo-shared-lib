@@ -13,12 +13,14 @@ import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.components.StorageScheme;
 
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 
-@State(name = "HippoSharedProjectSettings", storages = @Storage(
-        file = StoragePathMacros.PROJECT_CONFIG_DIR + "/HippoSharedProjectSettings.xml",
-        scheme = StorageScheme.DIRECTORY_BASED,
-        id = "HippoSharedProjectSettings"))
-public class HippoSharedProjectSettings extends HippoSharedApplicationConfig implements ProjectComponent {
+@State(
+        name = "HippoSharedProjectConfig", storages = {
+        @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
+        @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/hippo_shared_libs.xml", scheme = StorageScheme.DIRECTORY_BASED)
+})
+public class HippoSharedProjectSettings extends BaseConfig implements ProjectComponent {
 
 
     @Override
@@ -35,5 +37,21 @@ public class HippoSharedProjectSettings extends HippoSharedApplicationConfig imp
     @Override
     public String getDisplayName() {
         return "Hippo shared libs (Project)";
+    }
+
+    @Override
+    public void initComponent() {
+
+    }
+
+    @Override
+    public void disposeComponent() {
+
+    }
+
+    @NotNull
+    @Override
+    public String getComponentName() {
+        return "HippoSharedProjectSettings";
     }
 }

@@ -6,7 +6,7 @@
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      1.0.6 Added support for new v11 distribution style (shared content)
       1.0.5 Added option to copy log4j file to tomcat/conf directory (use -Dlog4j.configuration=file:${CATALINA_BASE}/conf/log4j.xml to enable it)
       1.0.4 Config storage fixes (now within .idea folder), duplicate (shared) jar files detection and filtering <br />
       1.0.3 add option to create a file which contains project root path (used by auto export), see documentation<br />
@@ -23,16 +24,7 @@
       ]]>
   </change-notes>
 
-  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
   <idea-version since-build="107.105"/>
-
-  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.machak.idea.plugins.com.intellij.modules.lang</depends>
-  -->
-
-
   <application-components>
     <component>
       <implementation-class>com.machak.idea.plugins.config.HippoSharedApplicationConfig</implementation-class>
@@ -43,10 +35,12 @@
       <implementation-class>com.machak.idea.plugins.config.HippoSharedProjectSettings</implementation-class>
     </component>
   </project-components>
+
   <extensions defaultExtensionNs="com.intellij">
     <applicationConfigurable instance="com.machak.idea.plugins.config.HippoSharedApplicationConfig"
     />
-    <projectConfigurable instance="com.machak.idea.plugins.config.HippoSharedProjectSettings"
+
+    <projectConfigurable groupId="Hippo" id="HippoSharedProjectSettings" instance="com.machak.idea.plugins.config.HippoSharedProjectSettings"
     />
 
   </extensions>

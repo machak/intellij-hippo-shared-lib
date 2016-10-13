@@ -6,7 +6,9 @@
 package com.machak.idea.plugins.config;
 
 
-public class StorageState {
+import java.io.Serializable;
+
+public class StorageState implements Serializable {
     //@Attribute("deleteAllJars")
     public boolean deleteAllJars;
     //@Attribute("copyOtherJars")
@@ -110,4 +112,59 @@ public class StorageState {
         this.createProjectFile = createProjectFile;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final StorageState that = (StorageState) o;
+
+        if (deleteAllJars != that.deleteAllJars) {
+            return false;
+        }
+        if (copyOtherJars != that.copyOtherJars) {
+            return false;
+        }
+        if (copyLog4J != that.copyLog4J) {
+            return false;
+        }
+        if (showDialog != that.showDialog) {
+            return false;
+        }
+        if (createProjectFile != that.createProjectFile) {
+            return false;
+        }
+        if (log4JDirectory != null ? !log4JDirectory.equals(that.log4JDirectory) : that.log4JDirectory != null) {
+            return false;
+        }
+        if (tomcatDirectory != null ? !tomcatDirectory.equals(that.tomcatDirectory) : that.tomcatDirectory != null) {
+            return false;
+        }
+        if (tomcatRootDirectory != null ? !tomcatRootDirectory.equals(that.tomcatRootDirectory) : that.tomcatRootDirectory != null) {
+            return false;
+        }
+        if (projectRootDirectory != null ? !projectRootDirectory.equals(that.projectRootDirectory) : that.projectRootDirectory != null) {
+            return false;
+        }
+        return distFile != null ? distFile.equals(that.distFile) : that.distFile == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (deleteAllJars ? 1 : 0);
+        result = 31 * result + (copyOtherJars ? 1 : 0);
+        result = 31 * result + (copyLog4J ? 1 : 0);
+        result = 31 * result + (showDialog ? 1 : 0);
+        result = 31 * result + (createProjectFile ? 1 : 0);
+        result = 31 * result + (log4JDirectory != null ? log4JDirectory.hashCode() : 0);
+        result = 31 * result + (tomcatDirectory != null ? tomcatDirectory.hashCode() : 0);
+        result = 31 * result + (tomcatRootDirectory != null ? tomcatRootDirectory.hashCode() : 0);
+        result = 31 * result + (projectRootDirectory != null ? projectRootDirectory.hashCode() : 0);
+        result = 31 * result + (distFile != null ? distFile.hashCode() : 0);
+        return result;
+    }
 }
