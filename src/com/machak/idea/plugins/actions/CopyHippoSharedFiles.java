@@ -57,6 +57,10 @@ import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.packaging.artifacts.ArtifactManager;
+import com.intellij.packaging.artifacts.ArtifactType;
+import com.intellij.packaging.impl.artifacts.ArtifactImpl;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
@@ -67,6 +71,8 @@ import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 
 public class CopyHippoSharedFiles extends AnAction {
@@ -168,7 +174,9 @@ public class CopyHippoSharedFiles extends AnAction {
 
 
             }
-
+            if (state.isAutoModifyProjectOutput()) {
+                modifyArtifactsOutput(project, component);
+            }
 
             final Map<String, String> depMap = extractDependencies(component, distFile);
             if (depMap.isEmpty()) {
@@ -219,6 +227,42 @@ public class CopyHippoSharedFiles extends AnAction {
 
         }
 
+    }
+
+    private void modifyArtifactsOutput(final Project project, final BaseConfig config) {
+        final ArtifactManager manager = ArtifactManager.getInstance(project);
+        final Artifact[] sortedArtifacts = manager.getSortedArtifacts();
+        for (Artifact artifact : sortedArtifacts) {
+            final ArtifactType artifactType = artifact.getArtifactType();
+            if (artifactType.getClass().getSimpleName().equals("ExplodedWarArtifactType")) {
+                final String outputFilePath = artifact.getOutputFilePath();
+                if (outputFilePath != null) {
+                    if (outputFilePath.endsWith(File.separator + "cms")) {
+                        ((ArtifactImpl) artifact).setOutputPath(
+                                createWebDirPath(config, "cms")
+                        );
+
+                    } else if (outputFilePath.endsWith(File.separator + "site")) {
+                        ((ArtifactImpl) artifact).setOutputPath(
+                                createWebDirPath(config, "site")
+                        );
+
+                    } else if (outputFilePath.endsWith(File.separator + "essentials")) {
+                        ((ArtifactImpl) artifact).setOutputPath(
+                                createWebDirPath(config, "essentials")
+                        );
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    @NotNull
+    private String createWebDirPath(final BaseConfig config, final String app) {
+        return config.getState().getTomcatRootDirectory()
+                + File.separator + "webapps" + File.separator + app;
     }
 
     private void showProjectRootPopup(final String basePath, final File tomcatDirectory) {

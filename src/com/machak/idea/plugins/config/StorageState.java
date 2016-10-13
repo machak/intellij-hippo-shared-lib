@@ -24,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
                 @Storage(id = "dir", value = "HippoSharedProjectConfig.xml", scheme = StorageScheme.DIRECTORY_BASED)})
 public class StorageState implements PersistentStateComponent<StorageState> {
     //@Attribute("deleteAllJars")
+    public boolean copyContentJar;
+    public boolean autoModifyProjectOutput;
     public boolean deleteAllJars;
     //@Attribute("copyOtherJars")
     public boolean copyOtherJars;
@@ -137,6 +139,12 @@ public class StorageState implements PersistentStateComponent<StorageState> {
 
         final StorageState that = (StorageState) o;
 
+        if (copyContentJar != that.copyContentJar) {
+            return false;
+        }
+        if (autoModifyProjectOutput != that.autoModifyProjectOutput) {
+            return false;
+        }
         if (deleteAllJars != that.deleteAllJars) {
             return false;
         }
@@ -169,7 +177,9 @@ public class StorageState implements PersistentStateComponent<StorageState> {
 
     @Override
     public int hashCode() {
-        int result = (deleteAllJars ? 1 : 0);
+        int result = (copyContentJar ? 1 : 0);
+        result = 31 * result + (autoModifyProjectOutput ? 1 : 0);
+        result = 31 * result + (deleteAllJars ? 1 : 0);
         result = 31 * result + (copyOtherJars ? 1 : 0);
         result = 31 * result + (copyLog4J ? 1 : 0);
         result = 31 * result + (showDialog ? 1 : 0);
@@ -182,6 +192,21 @@ public class StorageState implements PersistentStateComponent<StorageState> {
         return result;
     }
 
+    public boolean isCopyContentJar() {
+        return copyContentJar;
+    }
+
+    public void setCopyContentJar(final boolean copyContentJar) {
+        this.copyContentJar = copyContentJar;
+    }
+
+    public boolean isAutoModifyProjectOutput() {
+        return autoModifyProjectOutput;
+    }
+
+    public void setAutoModifyProjectOutput(final boolean autoModifyProjectOutput) {
+        this.autoModifyProjectOutput = autoModifyProjectOutput;
+    }
 
     @Nullable
     @Override

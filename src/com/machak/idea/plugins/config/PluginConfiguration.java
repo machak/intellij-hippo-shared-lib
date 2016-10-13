@@ -51,6 +51,8 @@ public class PluginConfiguration extends BaseConfigurable {
     private TextFieldWithBrowseButton projectRootDirectory;
     private TextFieldWithBrowseButton log4jLocation;
     private JCheckBox copyLog4j;
+    private JCheckBox copyContentJar;
+    private JCheckBox autoModifyProjectOutput;
 
 
     public PluginConfiguration() {
@@ -120,6 +122,8 @@ public class PluginConfiguration extends BaseConfigurable {
 
 
     public void setData(final StorageState state) {
+        state.setAutoModifyProjectOutput(autoModifyProjectOutput.isSelected());
+        state.setCopyContentJar(copyContentJar.isSelected());
         state.setCopyLog4J(copyLog4j.isSelected());
         state.setLog4JDirectory(log4jLocation.getText());
         state.setDeleteAllJars(deleteAllJars.isSelected());
@@ -134,6 +138,8 @@ public class PluginConfiguration extends BaseConfigurable {
     }
 
     public void getData(final StorageState state) {
+        copyContentJar.setSelected(state.isCopyContentJar());
+        autoModifyProjectOutput.setSelected(state.isAutoModifyProjectOutput());
         deleteAllJars.setSelected(state.isDeleteAllJars());
         copyOtherJars.setSelected(state.isCopyOtherJars());
         createProjectFile.setSelected(state.isCreateProjectFile());
@@ -154,6 +160,8 @@ public class PluginConfiguration extends BaseConfigurable {
                 || showConfirmationDialog.isSelected() != state.isShowDialog()
                 || createProjectFile.isSelected() != state.isCreateProjectFile()
                 || copyLog4j.isSelected() != state.isCopyLog4J()
+                || copyContentJar.isSelected() != state.isCopyContentJar()
+                || autoModifyProjectOutput.isSelected() != state.isAutoModifyProjectOutput()
                 || copyOtherJars.isSelected() != state.isCopyOtherJars();
         if (changed) {
             return true;
