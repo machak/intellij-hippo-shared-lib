@@ -59,9 +59,9 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
+import com.machak.idea.plugins.config.ApplicationSettingsComponent;
 import com.machak.idea.plugins.config.BaseConfig;
-import com.machak.idea.plugins.config.HippoSharedApplicationConfig;
-import com.machak.idea.plugins.config.HippoSharedProjectSettings;
+import com.machak.idea.plugins.config.ProjectSettingsComponent;
 import com.machak.idea.plugins.config.StorageState;
 import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
@@ -98,10 +98,10 @@ public class CopyHippoSharedFiles extends AnAction {
 
 
             // project settings have higher priority (override):
-            BaseConfig component = project.getComponent(HippoSharedProjectSettings.class);
+            BaseConfig component = project.getComponent(ProjectSettingsComponent.class);
             if (notValid(component)) {
                 // try to fetch application (global) settings:
-                component = ApplicationManager.getApplication().getComponent(HippoSharedApplicationConfig.class);
+                component = ApplicationManager.getApplication().getComponent(ApplicationSettingsComponent.class);
                 if (notValid(component)) {
                     if (component == null) {
                         error("Couldn't read settings (project nor application wide)");

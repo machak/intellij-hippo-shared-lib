@@ -6,9 +6,23 @@
 package com.machak.idea.plugins.config;
 
 
-import java.io.Serializable;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StorageScheme;
+import com.intellij.openapi.project.Project;
+import com.intellij.util.xmlb.XmlSerializerUtil;
 
-public class StorageState implements Serializable {
+import org.jetbrains.annotations.Nullable;
+
+
+@State(
+        name = "HippoSharedProjectConfig",
+        storages = {
+                @Storage(id = "default", value = "HippoSharedProjectConfig.xml"),
+                @Storage(id = "dir", value = "HippoSharedProjectConfig.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+public class StorageState implements PersistentStateComponent<StorageState> {
     //@Attribute("deleteAllJars")
     public boolean deleteAllJars;
     //@Attribute("copyOtherJars")
@@ -166,5 +180,27 @@ public class StorageState implements Serializable {
         result = 31 * result + (projectRootDirectory != null ? projectRootDirectory.hashCode() : 0);
         result = 31 * result + (distFile != null ? distFile.hashCode() : 0);
         return result;
+    }
+
+
+    @Nullable
+    @Override
+    public StorageState getState() {
+        return this;
+    }
+
+    @Override
+    public void loadState(StorageState state) {
+        XmlSerializerUtil.copyBean(state, this);
+    }
+
+    @Nullable
+    public static StorageState getInstance(Project project) {
+        final StorageState service = ServiceManager.getService(project, StorageState.class);
+        if (service == null) {
+            return new StorageState();
+        }
+
+        return service;
     }
 }
