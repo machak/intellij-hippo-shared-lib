@@ -8,7 +8,7 @@
 
 package com.machak.idea.plugins.config;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BaseConfig {
@@ -17,8 +17,11 @@ public class BaseConfig {
     protected StorageState state;
 
 
-    @Nullable
+    @NotNull
     public StorageState getState() {
+        if (state == null) {
+            return new StorageState();
+        }
         return state;
     }
 

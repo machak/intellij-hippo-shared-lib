@@ -46,6 +46,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -507,7 +508,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private Map<String, String> extractDependencies(final BaseConfig config, final File distFile) {
         final Map<String, String> depMap = new HashMap<String, String>();
-
+        final StorageState state = config.getState();
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -535,9 +536,14 @@ public class CopyHippoSharedFiles extends AnAction {
                         depMap.putAll(parseDependencySet(config, makeAssemblySet(sets)));
 
                         // oh no..someone decided to make things difficult...
-                        final Component.Files files = component.getFiles();
-                        System.out.println("files = " + files);
+                        // see extractContentDependency...skip parsing of .jar artifact because we do not build with ant
+                        // final Component.Files files = component.getFiles();
+
+
                     }
+                }
+                if (state.isCopyContentJar() && depMap.size() > 0) {
+                    extractContentDependency(project, state);
                 }
 
             } else {
@@ -549,25 +555,36 @@ public class CopyHippoSharedFiles extends AnAction {
         return depMap;
     }
 
-    /*
-       for (DependencySet set : dependencySet) {
-            final String outputDirectory = set.getOutputDirectory();
-            boolean accept = outputDirectory.equals("/shared/lib");
-            if (!accept && state.isCopyOtherJars()) {
-                accept = outputDirectory.equals("/common/lib");
-            }
-            if (accept) {
-                final DependencySet.Includes includes = set.getIncludes();
-                final List<String> include = includes.getInclude();
-                for (String inc : include) {
-                    final String[] dep = ARTIFACT_SPLITTER.split(inc);
-                    final String groupId = dep[0];
-                    final String artifactId = dep[1];
-                    depMap.put(artifactId, groupId);
-                }
+    private void extractContentDependency(final Project project, final StorageState state) {
+        final ModuleManager manager = ModuleManager.getInstance(project);
+        final Module[] modules = manager.getModules();
+        for (Module module : modules) {
+            final String name = module.getName();
+            if (name.endsWith("-content")) {
+                final CompilerManager compilerManager = CompilerManager.getInstance(project);
+                compilerManager.compile(module, (b, i, i1, compileContext) -> {
+                    VirtualFile moduleFile = module.getModuleFile();
+                    if (moduleFile != null && moduleFile.getName().endsWith(".iml")) {
+                        moduleFile = moduleFile.getParent();
+                        if (moduleFile == null) {
+                            return;
+                        }
+                        final String canonicalPath = moduleFile.getCanonicalPath();
+                        if (canonicalPath != null) {
+                            final String targetName = state.getTomcatDirectory()
+                                    + File.separator + module.getName() + ".jar";
+                            JarUtils.makeJar(new File(canonicalPath
+                                    + File.separator + "target"
+                                    + File.separator + "classes"
+                            ), new File(targetName));
+                        }
+                    }
+
+                });
             }
         }
-     */
+    }
+
     private Assembly.DependencySets makeAssemblySet(final Component.DependencySets sets) {
         if (sets == null) {
             return new Assembly.DependencySets();
