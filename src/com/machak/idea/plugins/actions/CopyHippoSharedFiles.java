@@ -65,6 +65,7 @@ import com.machak.idea.plugins.config.ProjectSettingsComponent;
 import com.machak.idea.plugins.config.StorageState;
 import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
+import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
 
 
@@ -406,9 +407,9 @@ public class CopyHippoSharedFiles extends AnAction {
 
     }
 
-    private String extractLog4jFilePath(final Project project, final BaseConfig component) {
+    private String extractLog4jFilePath(final Project project, final BaseConfig config) {
         final String logFilePath;
-        final StorageState state = component.getState();
+        final StorageState state = config.getState();
         if (Strings.isNullOrEmpty(state.getLog4JDirectory())) {
             final String basePath = project.getBasePath();
             if (basePath != null && basePath.endsWith(File.separator)) {
@@ -460,38 +461,113 @@ public class CopyHippoSharedFiles extends AnAction {
         }
     }
 
-    private Map<String, String> extractDependencies(final BaseConfig component, final File distFile) {
+    private Map<String, String> extractDependencies(final BaseConfig config, final File distFile) {
         final Map<String, String> depMap = new HashMap<String, String>();
 
         try {
-            final JAXBContext context = JAXBContext.newInstance(Assembly.class);
+            final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
             @SuppressWarnings("unchecked")
             final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
             final Assembly assembly = jaxbElement.getValue();
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
-            final List<DependencySet> dependencySet = dependencySets.getDependencySet();
-
-            final StorageState state = component.getState();
-            for (DependencySet set : dependencySet) {
-                final String outputDirectory = set.getOutputDirectory();
-                boolean accept = outputDirectory.equals("/shared/lib");
-                if (!accept && state.isCopyOtherJars()) {
-                    accept = outputDirectory.equals("/common/lib");
+            if (dependencySets == null) {
+                // this is most probably new shit (v.11)  setup:
+                final Assembly.ComponentDescriptors descriptors = assembly.getComponentDescriptors();
+                if (descriptors == null) {
+                    return depMap;
                 }
-                if (accept) {
-                    final DependencySet.Includes includes = set.getIncludes();
-                    final List<String> include = includes.getInclude();
-                    for (String inc : include) {
-                        final String[] dep = ARTIFACT_SPLITTER.split(inc);
-                        final String groupId = dep[0];
-                        final String artifactId = dep[1];
-                        depMap.put(artifactId, groupId);
+                final List<String> componentDescriptor = descriptors.getComponentDescriptor();
+                final File root = distFile.getParentFile();
+                for (String descriptor : componentDescriptor) {
+                    final String fullPath = root.getAbsolutePath() + File.separator + descriptor;
+                    final File file = new File(fullPath);
+                    if (file.exists()) {
+                        @SuppressWarnings("unchecked")
+                        final JAXBElement<Component> jaxbComponent = (JAXBElement<Component>) unmarshaller.unmarshal(file);
+                        final Component component = jaxbComponent.getValue();
+                        // we are only interested in dependencies....
+                        final Component.DependencySets sets = component.getDependencySets();
+                        depMap.putAll(parseDependencySet(config, makeAssemblySet(sets)));
+
+                        // oh no..someone decided to make things difficult...
+                        final Component.Files files = component.getFiles();
+                        System.out.println("files = " + files);
                     }
                 }
+
+            } else {
+                depMap.putAll(parseDependencySet(config, dependencySets));
             }
         } catch (JAXBException e) {
             error("Error creating marshaller" + e.getMessage());
+        }
+        return depMap;
+    }
+
+    /*
+       for (DependencySet set : dependencySet) {
+            final String outputDirectory = set.getOutputDirectory();
+            boolean accept = outputDirectory.equals("/shared/lib");
+            if (!accept && state.isCopyOtherJars()) {
+                accept = outputDirectory.equals("/common/lib");
+            }
+            if (accept) {
+                final DependencySet.Includes includes = set.getIncludes();
+                final List<String> include = includes.getInclude();
+                for (String inc : include) {
+                    final String[] dep = ARTIFACT_SPLITTER.split(inc);
+                    final String groupId = dep[0];
+                    final String artifactId = dep[1];
+                    depMap.put(artifactId, groupId);
+                }
+            }
+        }
+     */
+    private Assembly.DependencySets makeAssemblySet(final Component.DependencySets sets) {
+        if (sets == null) {
+            return new Assembly.DependencySets();
+        }
+        final Assembly.DependencySets dependencySets = new Assembly.DependencySets();
+        final List<com.machak.idea.plugins.model.component.DependencySet> dependencySet = sets.getDependencySet();
+        if (dependencySet != null) {
+            for (com.machak.idea.plugins.model.component.DependencySet set : dependencySet) {
+                final DependencySet d = new DependencySet();
+                d.setOutputDirectory(set.getOutputDirectory());
+                final com.machak.idea.plugins.model.component.DependencySet.Includes includes = set.getIncludes();
+                if (includes != null && includes.getInclude() != null) {
+                    d.setIncludes(new DependencySet.Includes());
+                    final List<String> includeList = includes.getInclude();
+                    for (String inc : includeList) {
+                        d.getIncludes().getInclude().add(inc);
+                    }
+                }
+                dependencySets.getDependencySet().add(d);
+            }
+        }
+        return dependencySets;
+    }
+
+    private Map<String, String> parseDependencySet(final BaseConfig config, final Assembly.DependencySets dependencySets) {
+        final List<DependencySet> dependencySet = dependencySets.getDependencySet();
+        final Map<String, String> depMap = new HashMap<>();
+        final StorageState state = config.getState();
+        for (DependencySet set : dependencySet) {
+            final String outputDirectory = set.getOutputDirectory();
+            boolean accept = outputDirectory.equals("/shared/lib") || outputDirectory.equals("shared/lib");
+            if (!accept && state.isCopyOtherJars()) {
+                accept = outputDirectory.equals("/common/lib") || outputDirectory.equals("common/lib");
+            }
+            if (accept) {
+                final DependencySet.Includes includes = set.getIncludes();
+                final List<String> include = includes.getInclude();
+                for (String inc : include) {
+                    final String[] dep = ARTIFACT_SPLITTER.split(inc);
+                    final String groupId = dep[0];
+                    final String artifactId = dep[1];
+                    depMap.put(artifactId, groupId);
+                }
+            }
         }
         return depMap;
     }
