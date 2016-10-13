@@ -46,9 +46,10 @@
 
 
   <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="com.machak.idea.plugins.config.StorageState" serviceImplementation="com.machak.idea.plugins.config.StorageState"/>
     <projectService serviceInterface="com.machak.idea.plugins.config.StorageState" serviceImplementation="com.machak.idea.plugins.config.StorageState"/>
     <projectConfigurable id="hippo.shared.project.configurable" displayName="Hippo shared libs (Project)" instance="com.machak.idea.plugins.config.ProjectSettingsComponent"/>
-    <!--<applicationConfigurable id="hippo.shared.app.configurable" displayName="Hippo shared libs (Global)" instance="com.machak.idea.plugins.config.ApplicationSettingsComponent"/>-->
+    <applicationConfigurable id="hippo.shared.app.configurable" displayName="Hippo shared libs (Global)" instance="com.machak.idea.plugins.config.ApplicationSettingsComponent"/>
   </extensions>
 
   <!--  <project-components>

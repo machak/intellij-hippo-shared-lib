@@ -195,12 +195,11 @@ public class StorageState implements PersistentStateComponent<StorageState> {
     }
 
     @Nullable
+    public static StorageState getInstance() {
+        return ServiceManager.getService(StorageState.class);
+    }
+    @Nullable
     public static StorageState getInstance(Project project) {
-        final StorageState service = ServiceManager.getService(project, StorageState.class);
-        if (service == null) {
-            return new StorageState();
-        }
-
-        return service;
+        return ServiceManager.getService(project, StorageState.class);
     }
 }

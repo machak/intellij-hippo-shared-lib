@@ -9,9 +9,6 @@ package com.machak.idea.plugins.config;
 import javax.swing.JComponent;
 
 import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 
@@ -19,14 +16,15 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "HippoSharedApplicationConfig", storages = {@Storage(id = "dir",
-        file = "HippoSharedApplicationConfig.xml",
-        scheme = StorageScheme.DIRECTORY_BASED)})
+
 public class ApplicationSettingsComponent extends BaseConfig implements ApplicationComponent, Configurable {
 
 
     private PluginConfiguration configPane;
 
+    public ApplicationSettingsComponent() {
+        this.state = StorageState.getInstance();
+    }
 
     @Override
     public void initComponent() {
