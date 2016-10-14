@@ -577,6 +577,7 @@ public class CopyHippoSharedFiles extends AnAction {
                                     + File.separator + "target"
                                     + File.separator + "classes"
                             ), new File(targetName));
+                            info("Created content jar:  " + targetName);
                         }
                     }
 
