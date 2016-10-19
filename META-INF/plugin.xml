@@ -6,7 +6,7 @@
 <idea-plugin version="2">
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      1.0.7 Fix creating of content file (didn't work in cases Intellij output path is used instead of maven output)
       1.0.6 Added support for new v11 distribution style (shared content)
       1.0.5 Added option to copy log4j file to tomcat/conf directory (use -Dlog4j.configuration=file:${CATALINA_BASE}/conf/log4j.xml to enable it)
       1.0.4 Config storage fixes (now within .idea folder), duplicate (shared) jar files detection and filtering <br />
