@@ -50,6 +50,7 @@ import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEntry;
@@ -57,6 +58,7 @@ import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
@@ -186,6 +188,11 @@ public class CopyHippoSharedFiles extends AnAction {
             }
             // cleanup old stuff
             processJars(component, tomcatSharedDirectory, sharedDirectory, depMap);
+            // create shared file:
+            if (state.isCopyContentJar() && depMap.size() > 0) {
+                extractContentDependency(project, state);
+            }
+
             // check if we need to create a project root file:
             if (state.isCreateProjectFile()) {
                 // first check if we have an override:
@@ -307,9 +314,9 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private void createAndWriteFile(final String filePath, final String content) {
         info("Creating file: " + filePath);
-        final File file = new File(filePath);
         FileWriter writer = null;
         try {
+            final File file = new File(filePath);
             if (!file.exists()) {
                 final boolean created = file.createNewFile();
                 if (created) {
@@ -542,9 +549,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
                     }
                 }
-                if (state.isCopyContentJar() && depMap.size() > 0) {
-                    extractContentDependency(project, state);
-                }
+
 
             } else {
                 depMap.putAll(parseDependencySet(config, dependencySets));
@@ -563,24 +568,16 @@ public class CopyHippoSharedFiles extends AnAction {
             if (name.endsWith("-content")) {
                 final CompilerManager compilerManager = CompilerManager.getInstance(project);
                 compilerManager.compile(module, (b, i, i1, compileContext) -> {
-                    VirtualFile moduleFile = module.getModuleFile();
-                    if (moduleFile != null && moduleFile.getName().endsWith(".iml")) {
-                        moduleFile = moduleFile.getParent();
-                        if (moduleFile == null) {
-                            return;
-                        }
-                        final String canonicalPath = moduleFile.getCanonicalPath();
-                        if (canonicalPath != null) {
-                            final String targetName = state.getTomcatDirectory()
-                                    + File.separator + module.getName() + ".jar";
-                            JarUtils.makeJar(new File(canonicalPath
-                                    + File.separator + "target"
-                                    + File.separator + "classes"
-                            ), new File(targetName));
-                            info("Created content jar:  " + targetName);
-                        }
+                    final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
+                    final String outputPath = moduleRootManager.getModuleExtension(CompilerModuleExtension.class).getCompilerOutputUrl();
+                    final File outputDirectory = new File(VfsUtilCore.urlToPath(outputPath));
+                    if (outputDirectory.exists()) {
+                        final String targetName = state.getTomcatDirectory() + File.separator + module.getName() + ".jar";
+                        JarUtils.makeJar(outputDirectory, new File(targetName));
+                        info("Created content jar:  " + targetName);
+                    } else {
+                        error("Couldn't find output directory of content module: " + module.getName());
                     }
-
                 });
             }
         }
