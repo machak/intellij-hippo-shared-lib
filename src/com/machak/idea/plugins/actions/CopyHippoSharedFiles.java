@@ -189,7 +189,7 @@ public class CopyHippoSharedFiles extends AnAction {
             // cleanup old stuff
             processJars(component, tomcatSharedDirectory, sharedDirectory, depMap);
             // create shared file:
-            if (state.isCopyContentJar() && depMap.size() > 0) {
+            if (state.isCopyContentJar() && depMap.size() > 0 && needsSharedContent(distFile)) {
                 extractContentDependency(project, state);
             }
 
@@ -511,6 +511,26 @@ public class CopyHippoSharedFiles extends AnAction {
                 }
             }
         }
+    }
+
+    /**
+     * Only copy content if new style disttribution.xml is available (v.11. content style)
+     */
+    private boolean needsSharedContent(final File distFile) {
+        try {
+            final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
+            final Unmarshaller unmarshaller = context.createUnmarshaller();
+            @SuppressWarnings("unchecked")
+            final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
+            final Assembly assembly = jaxbElement.getValue();
+            final Assembly.DependencySets dependencySets = assembly.getDependencySets();
+            if (dependencySets == null) {
+                return true;
+            }
+        } catch (JAXBException e) {
+            error("Error creating marshaller" + e.getMessage());
+        }
+        return false;
     }
 
     private Map<String, String> extractDependencies(final BaseConfig config, final File distFile) {
