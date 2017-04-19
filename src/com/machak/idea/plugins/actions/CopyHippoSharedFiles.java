@@ -33,11 +33,27 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.tomcat.server.TomcatConfiguration;
+import org.jetbrains.idea.tomcat.server.TomcatIntegration;
+import org.jetbrains.idea.tomcat.server.TomcatRemoteModel;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
+import com.intellij.execution.RunManager;
+import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.RemoteConnection;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.remote.RemoteConfiguration;
+import com.intellij.execution.remote.RemoteConfigurationType;
+import com.intellij.javaee.run.configuration.CommonStrategy;
+import com.intellij.javaee.run.configuration.J2EEConfigurationFactory;
+import com.intellij.javaee.run.configuration.JavaeeRunConfigurationCommonSettingsBean;
+import com.intellij.javaee.run.localRun.ExecutableObjectStartupPolicy;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
@@ -75,8 +91,6 @@ import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
 
-import org.jetbrains.annotations.NotNull;
-
 
 public class CopyHippoSharedFiles extends AnAction {
     /**
@@ -95,6 +109,7 @@ public class CopyHippoSharedFiles extends AnAction {
     private static final Pattern LIBRARY_MATCHER = Pattern.compile("(?:Maven:\\s*)(.*):(.*):(?:.*)");
     private static final Object[] COLUMN_NAMES = {"Files", "Delete?"};
     private static final Pattern PATTERN_JAR_EXTENSION = Pattern.compile("(?:(.*))(.jar)$");
+    private static final String HIPPO_TOMCAT = "HIPPO_TOMCAT";
     private Project project;
     private String[] myFiles;
     private boolean[] myCheckedMarks;
@@ -146,6 +161,9 @@ public class CopyHippoSharedFiles extends AnAction {
                 return;
             }
 
+            createRemoteDebugger();
+            //createDebugPort();
+            //ConfigurationFactory factory =
 
             //############################################
             // CHECK FOR LOG4J FILE
@@ -235,6 +253,96 @@ public class CopyHippoSharedFiles extends AnAction {
 
         }
 
+    }
+
+    private void createRemoteDebugger() {
+        final String remoteApp = "HIPPO_REMOTE";
+        if (debugExists(remoteApp)) {
+            return;
+        }
+        final RunManager runManager = RunManager.getInstance(project);
+        final RemoteConfigurationType remoteType = RemoteConfigurationType.getInstance();
+        final ConfigurationFactory[] configurationFactories = remoteType.getConfigurationFactories();
+        final ConfigurationFactory configurationFactory = configurationFactories[0];
+        final RunConfiguration myremote = configurationFactory.createConfiguration(remoteApp, configurationFactory.createTemplateConfiguration(project));
+        final RunnerAndConfigurationSettings configuration = runManager.createConfiguration(myremote, configurationFactory);
+        configuration.setEditBeforeRun(false);
+        runManager.addConfiguration(configuration, false);
+        final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
+        for (RunConfiguration r : allConfigurationsList) {
+            if (r.getName().equals(remoteApp)) {
+                final RemoteConfiguration s = (RemoteConfiguration) r;
+                s.HOST = "localhost";
+                s.PORT = "55555";
+                final RemoteConnection remoteConnection = s.createRemoteConnection();
+                remoteConnection.setAddress("8080");
+
+
+            }
+
+
+        }
+
+    }
+
+    private boolean debugExists(final String app) {
+        final RunManager runManager = RunManager.getInstance(project);
+        final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
+
+        for (RunConfiguration r : allConfigurationsList) {
+            if (r.getName().equals(app)) {
+                return true;
+            }
+
+        }
+        return false;
+
+    }
+
+    private void createDebugPort() {
+        if (debugExists(HIPPO_TOMCAT)) {
+            return;
+        }
+        final TomcatIntegration instance = TomcatIntegration.getInstance();
+        final TomcatConfiguration type = TomcatConfiguration.getInstance();
+        final RunManager runManager = RunManager.getInstance(project);
+        final ConfigurationFactory[] configFactories = type.getConfigurationFactories();
+        final J2EEConfigurationFactory j2EEConfigurationFactory = J2EEConfigurationFactory.getInstance();
+        final ConfigurationFactory c = configFactories[0];
+        final TomcatRemoteModel serverSpecific = new TomcatRemoteModel();
+
+        final RunConfiguration configFactory = j2EEConfigurationFactory.createJ2EERunConfiguration(c, project, serverSpecific, instance, false, ExecutableObjectStartupPolicy.DEFAULT);
+        //final com.intellij.javaee.run.configuration.CommonStrategy runConfiguration = (CommonStrategy) configFactory.createConfiguration("TOMCAT", configFactory.createTemplateConfiguration(project));
+
+        //runConfiguration.setLocal(false);
+        //final JavaeeRunConfigurationCommonSettingsBean settingsBean = runConfiguration.getSettingsBean();
+        //settingsBean.OPEN_IN_BROWSER = false;
+        //settingsBean.HOST = "localhost";
+        final RunnerAndConfigurationSettings configuration = runManager.createConfiguration(configFactory, c);
+        configuration.setEditBeforeRun(false);
+        configuration.setName(HIPPO_TOMCAT);
+        runManager.addConfiguration(configuration, false);
+        final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
+        for (RunConfiguration r : allConfigurationsList) {
+            if (r.getName().equals(HIPPO_TOMCAT)) {
+                final CommonStrategy s = (CommonStrategy) r;
+                s.setApplicationServerName("Tomcat8");
+                s.setLocal(false);
+                s.setUrlToOpenInBrowser("http://localhost:8080/site");
+                final JavaeeRunConfigurationCommonSettingsBean settingsBean = ((CommonStrategy) r).getSettingsBean();
+                settingsBean.OPEN_IN_BROWSER = false;
+
+               /* final ProgramRunner runner = ProgramRunnerUtil.getRunner("MACHAK_TOMCAT", configuration);
+                if (runner != null) {
+                    final ConfigurationPerRunnerSettings configurationSettings = configuration.getConfigurationSettings(runner);
+                    System.out.println("configurationSettings = " + configurationSettings);
+                    
+                }*/
+
+
+            }
+
+        }
     }
 
     private void modifyArtifactsOutput(final Project project, final BaseConfig config) {
@@ -362,19 +470,21 @@ public class CopyHippoSharedFiles extends AnAction {
                 if (library instanceof LibraryOrderEntry) {
                     final LibraryOrderEntry lib = (LibraryOrderEntry) library;
                     final String libraryName = lib.getLibraryName();
-                    final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
-                    if (matcher.matches()) {
-                        final String artifactName = matcher.group(1);
-                        final String groupName = matcher.group(2);
-                        final String ourName = depMap.get(groupName);
-                        if (ourName == null || !ourName.equals(artifactName)) {
-                            continue;
-                        }
-                        final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
-                        if (jarFiles.length == 1) {
-                            final VirtualFile jarFile = jarFiles[0];
-                            final LibWrapper wrapper = new LibWrapper(artifactName, groupName, ourName, jarFile, module);
-                            jars.add(wrapper);
+                    if (libraryName != null) {
+                        final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
+                        if (matcher.matches()) {
+                            final String artifactName = matcher.group(1);
+                            final String groupName = matcher.group(2);
+                            final String ourName = depMap.get(groupName);
+                            if (ourName == null || !ourName.equals(artifactName)) {
+                                continue;
+                            }
+                            final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
+                            if (jarFiles.length == 1) {
+                                final VirtualFile jarFile = jarFiles[0];
+                                final LibWrapper wrapper = new LibWrapper(artifactName, groupName, ourName, jarFile, module);
+                                jars.add(wrapper);
+                            }
                         }
                     }
                 }
@@ -520,8 +630,7 @@ public class CopyHippoSharedFiles extends AnAction {
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
-            @SuppressWarnings("unchecked")
-            final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
+            @SuppressWarnings("unchecked") final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
             final Assembly assembly = jaxbElement.getValue();
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
             if (dependencySets == null) {
@@ -539,8 +648,7 @@ public class CopyHippoSharedFiles extends AnAction {
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
-            @SuppressWarnings("unchecked")
-            final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
+            @SuppressWarnings("unchecked") final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
             final Assembly assembly = jaxbElement.getValue();
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
             if (dependencySets == null) {
@@ -555,8 +663,7 @@ public class CopyHippoSharedFiles extends AnAction {
                     final String fullPath = root.getAbsolutePath() + File.separator + descriptor;
                     final File file = new File(fullPath);
                     if (file.exists()) {
-                        @SuppressWarnings("unchecked")
-                        final JAXBElement<Component> jaxbComponent = (JAXBElement<Component>) unmarshaller.unmarshal(file);
+                        @SuppressWarnings("unchecked") final JAXBElement<Component> jaxbComponent = (JAXBElement<Component>) unmarshaller.unmarshal(file);
                         final Component component = jaxbComponent.getValue();
                         // we are only interested in dependencies....
                         final Component.DependencySets sets = component.getDependencySets();
