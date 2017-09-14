@@ -6,38 +6,6 @@
 
 package com.machak.idea.plugins.actions;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.tomcat.server.TomcatConfiguration;
-import org.jetbrains.idea.tomcat.server.TomcatIntegration;
-import org.jetbrains.idea.tomcat.server.TomcatRemoteModel;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -50,10 +18,6 @@ import com.intellij.execution.configurations.RemoteConnection;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.remote.RemoteConfiguration;
 import com.intellij.execution.remote.RemoteConfigurationType;
-import com.intellij.javaee.run.configuration.CommonStrategy;
-import com.intellij.javaee.run.configuration.J2EEConfigurationFactory;
-import com.intellij.javaee.run.configuration.JavaeeRunConfigurationCommonSettingsBean;
-import com.intellij.javaee.run.localRun.ExecutableObjectStartupPolicy;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
@@ -66,11 +30,7 @@ import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.CompilerModuleExtension;
-import com.intellij.openapi.roots.LibraryOrderEntry;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.OrderEntry;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
@@ -79,6 +39,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
+import com.intellij.packaging.artifacts.ModifiableArtifact;
 import com.intellij.packaging.impl.artifacts.ArtifactImpl;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
@@ -90,6 +51,26 @@ import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class CopyHippoSharedFiles extends AnAction {
@@ -299,7 +280,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     }
 
-    private void createDebugPort() {
+    /*private void createDebugPort() {
         if (debugExists(HIPPO_TOMCAT)) {
             return;
         }
@@ -332,18 +313,18 @@ public class CopyHippoSharedFiles extends AnAction {
                 final JavaeeRunConfigurationCommonSettingsBean settingsBean = ((CommonStrategy) r).getSettingsBean();
                 settingsBean.OPEN_IN_BROWSER = false;
 
-               /* final ProgramRunner runner = ProgramRunnerUtil.getRunner("MACHAK_TOMCAT", configuration);
+               *//* final ProgramRunner runner = ProgramRunnerUtil.getRunner("MACHAK_TOMCAT", configuration);
                 if (runner != null) {
                     final ConfigurationPerRunnerSettings configurationSettings = configuration.getConfigurationSettings(runner);
                     System.out.println("configurationSettings = " + configurationSettings);
                     
-                }*/
+                }*//*
 
 
             }
 
         }
-    }
+    }*/
 
     private void modifyArtifactsOutput(final Project project, final BaseConfig config) {
         final ArtifactManager manager = ArtifactManager.getInstance(project);
@@ -354,17 +335,17 @@ public class CopyHippoSharedFiles extends AnAction {
                 final String outputFilePath = artifact.getOutputFilePath();
                 if (outputFilePath != null) {
                     if (outputFilePath.endsWith(File.separator + "cms")) {
-                        ((ArtifactImpl) artifact).setOutputPath(
+                        ((ModifiableArtifact) artifact).setOutputPath(
                                 createWebDirPath(config, "cms")
                         );
 
                     } else if (outputFilePath.endsWith(File.separator + "site")) {
-                        ((ArtifactImpl) artifact).setOutputPath(
+                        ((ModifiableArtifact) artifact).setOutputPath(
                                 createWebDirPath(config, "site")
                         );
 
                     } else if (outputFilePath.endsWith(File.separator + "essentials")) {
-                        ((ArtifactImpl) artifact).setOutputPath(
+                        ((ModifiableArtifact) artifact).setOutputPath(
                                 createWebDirPath(config, "essentials")
                         );
                     }
@@ -410,7 +391,7 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
 
-    public static String readText(final File file) {
+    private static String readText(final File file) {
         try {
             final ByteSource source = Resources.asByteSource(file.toURI().toURL());
             return source.asCharSource(Charsets.UTF_8).read();
@@ -504,7 +485,7 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
     private Collection<VirtualFile> filterDuplicates(final Iterable<LibWrapper> libWrapperSet, final Map<String, String> depMap) {
-        final Map<String, VirtualFile> filtered = new HashMap<String, VirtualFile>();
+        final Map<String, VirtualFile> filtered = new HashMap<>();
         // check if duplicate & log a warning
         for (Map.Entry<String, String> dependency : depMap.entrySet()) {
             final String name = dependency.getKey();
@@ -643,8 +624,8 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
     private Map<String, String> extractDependencies(final BaseConfig config, final File distFile) {
-        final Map<String, String> depMap = new HashMap<String, String>();
-        final StorageState state = config.getState();
+        final Map<String, String> depMap = new HashMap<>();
+        //final StorageState state = config.getState();
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -692,7 +673,8 @@ public class CopyHippoSharedFiles extends AnAction {
         final Module[] modules = manager.getModules();
         for (Module module : modules) {
             final String name = module.getName();
-            if (name.endsWith("-content")) {
+            // v 11 style && v 12 style
+            if (name.endsWith("-content") || name.endsWith("-development")) {
                 final CompilerManager compilerManager = CompilerManager.getInstance(project);
                 compilerManager.compile(module, (b, i, i1, compileContext) -> {
                     final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);

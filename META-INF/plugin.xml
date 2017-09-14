@@ -6,7 +6,7 @@
 <idea-plugin>
   <id>com.machak.hippo.plugin.id</id>
   <name>Copy Hippo shared files</name>
-  <version>1.0.9</version>
+  <version>1.1.0</version>
   <depends>com.intellij.javaee</depends>
   <depends>Tomcat</depends>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
@@ -16,6 +16,7 @@
       ]]></description>
 
   <change-notes><![CDATA[
+      1.1.1 Add v12 support
       1.0.9 BUG-FIX: Enable per project setting. NEW: auto add remote debug settings, port default: 55555
       1.0.8 Don't copy content jar to shared content if already packaged with CMS app
       1.0.7 Fix creating of content file (didn't work in cases Intellij output path is used instead of maven output)
