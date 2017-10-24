@@ -8,6 +8,7 @@
   <name>Copy Hippo shared files</name>
   <version>1.1.0</version>
   <depends>com.intellij.javaee</depends>
+  <depends>org.jetbrains.idea.maven</depends>
   <depends>Tomcat</depends>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
@@ -37,7 +38,6 @@
       <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl H" second-keystroke="shift ctrl alt H"/>
     </action>
   </actions>
-
   <application-components>
     <component>
       <implementation-class>com.machak.idea.plugins.config.ApplicationSettingsComponent</implementation-class>

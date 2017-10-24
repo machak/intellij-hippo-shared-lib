@@ -8,9 +8,7 @@ package com.machak.idea.plugins.actions;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 
-/**
- * @version "$Id$"
- */
+
 public class LibWrapper {
 
     final String artifactName;

@@ -6,6 +6,40 @@
 
 package com.machak.idea.plugins.actions;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.maven.dom.MavenDomUtil;
+import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
+import org.jetbrains.idea.maven.model.MavenId;
+import org.jetbrains.idea.maven.project.MavenProject;
+import org.jetbrains.idea.maven.project.MavenProjectsManager;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -26,11 +60,17 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.Result;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.LibraryOrderEntry;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.OrderEntry;
+import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
@@ -40,9 +80,10 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
 import com.intellij.packaging.artifacts.ModifiableArtifact;
-import com.intellij.packaging.impl.artifacts.ArtifactImpl;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.xml.DomUtil;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
 import com.machak.idea.plugins.config.BaseConfig;
 import com.machak.idea.plugins.config.ProjectSettingsComponent;
@@ -51,26 +92,6 @@ import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class CopyHippoSharedFiles extends AnAction {
@@ -443,8 +464,25 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
     private void copyJars(final String tomcatSharedDirectory, final Map<String, String> depMap) {
-        final Module[] modules = ModuleManager.getInstance(project).getModules();
-        final Set<LibWrapper> jars = new HashSet<LibWrapper>();
+        depMap.put("hippo-services-autoreload", "org.onehippo.cms7");
+        final ModuleManager manager = ModuleManager.getInstance(project);
+        final Module[] modules = manager.getModules();
+        // add autoreload shit..moved to profile so not listed as model dependency..just to mak our life easier..:(
+        MavenProjectsManager m = MavenProjectsManager.getInstance(project);
+        final List<MavenProject> rootProjects = m.getRootProjects();
+        final MavenProject mavenProject = rootProjects.get(0);
+        final MavenDomProjectModel model = MavenDomUtil.getMavenDomProjectModel(project, mavenProject.getFile());
+        if (model != null) {
+            //noinspection rawtypes
+            new WriteCommandAction(project, "Add Maven Dependency", DomUtil.getFile(model)) {
+                @Override
+                protected void run(@NotNull Result result) {
+                    MavenId id = new MavenId("org.onehippo.cms7", "hippo-services-autoreload", null);
+                    MavenDomUtil.createDomDependency(model, null, id);
+                }
+            }.execute();
+        }
+        final Set<LibWrapper> jars = new HashSet<>();
         for (Module module : modules) {
             final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
             for (OrderEntry library : orderEntries) {
@@ -452,6 +490,7 @@ public class CopyHippoSharedFiles extends AnAction {
                     final LibraryOrderEntry lib = (LibraryOrderEntry) library;
                     final String libraryName = lib.getLibraryName();
                     if (libraryName != null) {
+                        //error(libraryName);
                         final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
                         if (matcher.matches()) {
                             final String artifactName = matcher.group(1);
@@ -486,6 +525,7 @@ public class CopyHippoSharedFiles extends AnAction {
 
     private Collection<VirtualFile> filterDuplicates(final Iterable<LibWrapper> libWrapperSet, final Map<String, String> depMap) {
         final Map<String, VirtualFile> filtered = new HashMap<>();
+        // add autoexport:
         // check if duplicate & log a warning
         for (Map.Entry<String, String> dependency : depMap.entrySet()) {
             final String name = dependency.getKey();
@@ -674,7 +714,7 @@ public class CopyHippoSharedFiles extends AnAction {
         for (Module module : modules) {
             final String name = module.getName();
             // v 11 style && v 12 style
-            if (name.endsWith("-content") || name.endsWith("-development")) {
+            if (name.endsWith("-content") || name.endsWith("-development") || name.endsWith("-application")) {
                 final CompilerManager compilerManager = CompilerManager.getInstance(project);
                 compilerManager.compile(module, (b, i, i1, compileContext) -> {
                     final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
