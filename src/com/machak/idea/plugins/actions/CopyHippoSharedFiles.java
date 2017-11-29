@@ -34,11 +34,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.maven.dom.MavenDomUtil;
-import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
-import org.jetbrains.idea.maven.model.MavenId;
-import org.jetbrains.idea.maven.project.MavenProject;
-import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -60,8 +55,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.Result;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -74,16 +67,16 @@ import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualFileImpl;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
 import com.intellij.packaging.artifacts.ModifiableArtifact;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.xml.DomUtil;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
 import com.machak.idea.plugins.config.BaseConfig;
 import com.machak.idea.plugins.config.ProjectSettingsComponent;
@@ -467,8 +460,10 @@ public class CopyHippoSharedFiles extends AnAction {
         depMap.put("hippo-services-autoreload", "org.onehippo.cms7");
         final ModuleManager manager = ModuleManager.getInstance(project);
         final Module[] modules = manager.getModules();
+
+
         // add autoreload shit..moved to profile so not listed as model dependency..just to mak our life easier..:(
-        MavenProjectsManager m = MavenProjectsManager.getInstance(project);
+        /*MavenProjectsManager m = MavenProjectsManager.getInstance(project);
         final List<MavenProject> rootProjects = m.getRootProjects();
         final MavenProject mavenProject = rootProjects.get(0);
         final MavenDomProjectModel model = MavenDomUtil.getMavenDomProjectModel(project, mavenProject.getFile());
@@ -481,8 +476,9 @@ public class CopyHippoSharedFiles extends AnAction {
                     MavenDomUtil.createDomDependency(model, null, id);
                 }
             }.execute();
-        }
+        }*/
         final Set<LibWrapper> jars = new HashSet<>();
+        boolean added = false;
         for (Module module : modules) {
             final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
             for (OrderEntry library : orderEntries) {
@@ -494,6 +490,7 @@ public class CopyHippoSharedFiles extends AnAction {
                         final Matcher matcher = LIBRARY_MATCHER.matcher(libraryName);
                         if (matcher.matches()) {
                             final String artifactName = matcher.group(1);
+
                             final String groupName = matcher.group(2);
                             final String ourName = depMap.get(groupName);
                             if (ourName == null || !ourName.equals(artifactName)) {
@@ -502,6 +499,18 @@ public class CopyHippoSharedFiles extends AnAction {
                             final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
                             if (jarFiles.length == 1) {
                                 final VirtualFile jarFile = jarFiles[0];
+                                if (!added && groupName.equals("hippo-cms7-commons")) {
+                                    final String name = jarFile.getName();
+                                    final String v = name.substring(name.lastIndexOf('-') + 1, name.lastIndexOf('.'));
+
+                                    final String location = getJarLocation("org.onehippo.cms7", "hippo-services-autoreload", v);
+                                    final VirtualFile ourFile = LocalFileSystem.getInstance().findFileByPath(location);
+                                    if (ourFile != null) {
+                                        final LibWrapper wrapper = new LibWrapper("org.onehippo.cms7", "hippo-services-autoreload", "org.onehippo.cms7", ourFile, module);
+                                        jars.add(wrapper);
+                                        added = true;
+                                    }
+                                }
                                 final LibWrapper wrapper = new LibWrapper(artifactName, groupName, ourName, jarFile, module);
                                 jars.add(wrapper);
                             }
@@ -521,6 +530,31 @@ public class CopyHippoSharedFiles extends AnAction {
             }
         }
 
+    }
+
+
+    private String getJarLocation(String packageName, String name, String version) {
+        final String mavenRepository = getMavenRepository();
+        final String[] parts = packageName.split("\\.");
+        final StringBuilder builder = new StringBuilder(mavenRepository);
+        for (String part : parts) {
+            builder.append(File.separator).append(part);
+        }
+        builder.append(File.separator)
+                .append(name) // subfolder
+                .append(File.separator)
+                .append(version) // version subfolder
+                .append(File.separator)
+                .append(name) // file name
+                .append('-')
+                .append(version)
+                .append(".jar");
+        return builder.toString();
+    }
+
+    private String getMavenRepository() {
+        final String userHomeDir = System.getProperty("user.home");
+        return userHomeDir + File.separator + ".m2" + File.separator + "repository";
     }
 
     private Collection<VirtualFile> filterDuplicates(final Iterable<LibWrapper> libWrapperSet, final Map<String, String> depMap) {
@@ -714,7 +748,7 @@ public class CopyHippoSharedFiles extends AnAction {
         for (Module module : modules) {
             final String name = module.getName();
             // v 11 style && v 12 style
-            if (name.endsWith("-content") || name.endsWith("-development") || name.endsWith("-application")) {
+            if (name.endsWith("-content") || name.endsWith("-development")) {
                 final CompilerManager compilerManager = CompilerManager.getInstance(project);
                 compilerManager.compile(module, (b, i, i1, compileContext) -> {
                     final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
