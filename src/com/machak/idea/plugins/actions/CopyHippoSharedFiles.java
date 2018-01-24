@@ -12,12 +12,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +29,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.maven.dom.MavenDomUtil;
+import org.jetbrains.idea.maven.dom.model.MavenDomParent;
+import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
+import org.jetbrains.idea.maven.dom.model.MavenDomProperties;
+import org.jetbrains.idea.maven.model.MavenArtifact;
+import org.jetbrains.idea.maven.model.MavenId;
+import org.jetbrains.idea.maven.project.*;
+import org.jetbrains.idea.maven.utils.MavenArtifactUtil;
+import org.jetbrains.idea.maven.utils.MavenUtil;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -55,6 +59,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.Result;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -75,8 +81,12 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
 import com.intellij.packaging.artifacts.ModifiableArtifact;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.xml.XmlTag;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.xml.DomUtil;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
 import com.machak.idea.plugins.config.BaseConfig;
 import com.machak.idea.plugins.config.ProjectSettingsComponent;
@@ -85,6 +95,8 @@ import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
+
+import static com.intellij.ui.content.ContentManagerEvent.ContentOperation.add;
 
 
 public class CopyHippoSharedFiles extends AnAction {
@@ -457,28 +469,12 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
     private void copyJars(final String tomcatSharedDirectory, final Map<String, String> depMap) {
-        depMap.put("hippo-services-autoreload", "org.onehippo.cms7");
         final ModuleManager manager = ModuleManager.getInstance(project);
         final Module[] modules = manager.getModules();
 
 
-        // add autoreload shit..moved to profile so not listed as model dependency..just to mak our life easier..:(
-        /*MavenProjectsManager m = MavenProjectsManager.getInstance(project);
-        final List<MavenProject> rootProjects = m.getRootProjects();
-        final MavenProject mavenProject = rootProjects.get(0);
-        final MavenDomProjectModel model = MavenDomUtil.getMavenDomProjectModel(project, mavenProject.getFile());
-        if (model != null) {
-            //noinspection rawtypes
-            new WriteCommandAction(project, "Add Maven Dependency", DomUtil.getFile(model)) {
-                @Override
-                protected void run(@NotNull Result result) {
-                    MavenId id = new MavenId("org.onehippo.cms7", "hippo-services-autoreload", null);
-                    MavenDomUtil.createDomDependency(model, null, id);
-                }
-            }.execute();
-        }*/
         final Set<LibWrapper> jars = new HashSet<>();
-        boolean added = false;
+
         for (Module module : modules) {
             final OrderEntry[] orderEntries = ModuleRootManager.getInstance(module).getOrderEntries();
             for (OrderEntry library : orderEntries) {
@@ -499,18 +495,6 @@ public class CopyHippoSharedFiles extends AnAction {
                             final VirtualFile[] jarFiles = lib.getFiles(OrderRootType.CLASSES);
                             if (jarFiles.length == 1) {
                                 final VirtualFile jarFile = jarFiles[0];
-                                if (!added && groupName.equals("hippo-cms7-commons")) {
-                                    final String name = jarFile.getName();
-                                    final String v = name.substring(name.lastIndexOf('-') + 1, name.lastIndexOf('.'));
-
-                                    final String location = getJarLocation("org.onehippo.cms7", "hippo-services-autoreload", v);
-                                    final VirtualFile ourFile = LocalFileSystem.getInstance().findFileByPath(location);
-                                    if (ourFile != null) {
-                                        final LibWrapper wrapper = new LibWrapper("org.onehippo.cms7", "hippo-services-autoreload", "org.onehippo.cms7", ourFile, module);
-                                        jars.add(wrapper);
-                                        added = true;
-                                    }
-                                }
                                 final LibWrapper wrapper = new LibWrapper(artifactName, groupName, ourName, jarFile, module);
                                 jars.add(wrapper);
                             }
@@ -520,16 +504,48 @@ public class CopyHippoSharedFiles extends AnAction {
             }
 
         }
+
+
         // copy files
         final Collection<VirtualFile> filteredFiles = filterDuplicates(jars, depMap);
+        processExtraFiles(filteredFiles);
         for (VirtualFile jar : filteredFiles) {
             try {
                 copyFile(tomcatSharedDirectory, jar);
             } catch (IOException e) {
-                error(String.format("Error while copy file%s", e.getMessage()));
+                error(String.format("Error during file copy: %s", e.getMessage()));
             }
         }
 
+    }
+
+    private void processExtraFiles(final Collection<VirtualFile> filteredFiles) {
+        try {
+            final MavenProjectsManager m = MavenProjectsManager.getInstance(project);
+            final List<MavenProject> rootProjects = m.getRootProjects();
+            final MavenProject mavenProject = rootProjects.get(0);
+            final MavenProjectReaderProjectLocator locator = coordinates -> null;
+            final MavenProjectReader reader = new MavenProjectReader(project);
+            final MavenProjectReaderResult readerResult = reader.readProject(m.getGeneralSettings(), mavenProject.getFile(), mavenProject.getActivatedProfilesIds(), locator);
+            final Properties myProperties = readerResult.mavenModel.getProperties();
+            final String autoReload = (String) myProperties.get("hippo.services.autoreload.version");
+            final String enterpriseServices = (String) myProperties.get("hippo.enterprise-services.version");
+            addExtraJar(filteredFiles, autoReload, "hippo-services-autoreload", "org.onehippo.cms7");
+            addExtraJar(filteredFiles, enterpriseServices, "hippo-enterprise-services", "com.onehippo.cms7");
+        } catch (Exception e) {
+            error(String.format("Error while processing extra files %s", e.getMessage()));
+        }
+    }
+
+    private void addExtraJar(final Collection<VirtualFile> files, final String v, final String groupName, final String artifactName) {
+        if (Strings.isNullOrEmpty(v)) {
+            return;
+        }
+        final String location = getJarLocation(artifactName, groupName, v);
+        final VirtualFile ourFile = LocalFileSystem.getInstance().findFileByPath(location);
+        if (ourFile != null) {
+            files.add(ourFile);
+        }
     }
 
 
@@ -551,7 +567,7 @@ public class CopyHippoSharedFiles extends AnAction {
                 .append(".jar");
         return builder.toString();
     }
-
+    
     private String getMavenRepository() {
         final String userHomeDir = System.getProperty("user.home");
         return userHomeDir + File.separator + ".m2" + File.separator + "repository";
@@ -609,7 +625,7 @@ public class CopyHippoSharedFiles extends AnAction {
                 }
             }
         }
-        return filtered.values();
+        return new ArrayList<>(filtered.values());
     }
 
     private String cleanupVersion(final String name, final String jarFile) {
