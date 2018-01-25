@@ -271,24 +271,26 @@ public class CopyHippoSharedFiles extends AnAction {
         final RemoteConfigurationType remoteType = RemoteConfigurationType.getInstance();
         final ConfigurationFactory[] configurationFactories = remoteType.getConfigurationFactories();
         final ConfigurationFactory configurationFactory = configurationFactories[0];
-        final RunConfiguration myremote = configurationFactory.createConfiguration(remoteApp, configurationFactory.createTemplateConfiguration(project));
-        final RunnerAndConfigurationSettings configuration = runManager.createConfiguration(myremote, configurationFactory);
+        final RunConfiguration myRemote = configurationFactory.createConfiguration(remoteApp, configurationFactory.createTemplateConfiguration(project));
+        final RunnerAndConfigurationSettings configuration = runManager.createConfiguration(myRemote, configurationFactory);
+        runManager.addConfiguration(configuration, true);
         configuration.setEditBeforeRun(false);
-        runManager.addConfiguration(configuration, false);
+        configuration.setTemporary(false);
         final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
         for (RunConfiguration r : allConfigurationsList) {
             if (r.getName().equals(remoteApp)) {
                 final RemoteConfiguration s = (RemoteConfiguration) r;
                 s.HOST = "localhost";
                 s.PORT = "55555";
+                s.USE_SOCKET_TRANSPORT = true;
                 final RemoteConnection remoteConnection = s.createRemoteConnection();
+                remoteConnection.setHostName("localhost");
                 remoteConnection.setAddress("8080");
-
-
+                remoteConnection.setUseSockets(true);
             }
-
-
         }
+        runManager.setSelectedConfiguration(configuration);
+
 
     }
 
@@ -421,7 +423,7 @@ public class CopyHippoSharedFiles extends AnAction {
         try {
             final ByteSource source = Resources.asByteSource(file.toURI().toURL());
             return source.asCharSource(Charsets.UTF_8).read();
-        } catch (IOException e) {
+        } catch (IOException ignore) {
 
         }
         return null;
