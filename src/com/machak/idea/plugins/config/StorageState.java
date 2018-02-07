@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 @State(
         name = "HippoSharedProjectConfig",
         storages = {
-                @Storage(id = "default", value = "HippoSharedProjectConfig.xml"),
-                @Storage(id = "dir", value = "HippoSharedProjectConfig.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+                @Storage(value = "HippoSharedProjectConfig.xml"),
+                @Storage(value = "HippoSharedProjectConfig.xml", scheme = StorageScheme.DIRECTORY_BASED)})
 public class StorageState implements PersistentStateComponent<StorageState> {
     //@Attribute("deleteAllJars")
     public boolean copyContentJar;
