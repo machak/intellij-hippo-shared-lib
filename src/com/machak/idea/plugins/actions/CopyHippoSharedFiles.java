@@ -103,6 +103,7 @@ public class CopyHippoSharedFiles extends AnAction {
     /**
      * Name of the project files
      */
+    private final static String CONFIG_NAME = "REMOTE_TOMCAT";
     public static final CharMatcher VERSION_CHARS = CharMatcher.anyOf("0123456789-._");
     public static final String PROJECT_FILE = "hippo_project_directory.txt";
     public static final String DEFAULT_DIST_FILE_PATH = "src" + File.separator + "main" + File.separator + "assembly" + File.separator + "distribution.xml";
@@ -168,7 +169,7 @@ public class CopyHippoSharedFiles extends AnAction {
                 return;
             }
 
-            createRemoteDebugger();
+            createRemoteDebugger(event);
             //createDebugPort();
             //ConfigurationFactory factory =
 
@@ -262,23 +263,26 @@ public class CopyHippoSharedFiles extends AnAction {
 
     }
 
-    private void createRemoteDebugger() {
-        final String remoteApp = "HIPPO_REMOTE";
-        if (debugExists(remoteApp)) {
+    private void createRemoteDebugger(final AnActionEvent event) {
+        if (project == null) {
+            return;
+        }
+
+        if (debugExists(project)) {
             return;
         }
         final RunManager runManager = RunManager.getInstance(project);
         final RemoteConfigurationType remoteType = RemoteConfigurationType.getInstance();
         final ConfigurationFactory[] configurationFactories = remoteType.getConfigurationFactories();
         final ConfigurationFactory configurationFactory = configurationFactories[0];
-        final RunConfiguration myRemote = configurationFactory.createConfiguration(remoteApp, configurationFactory.createTemplateConfiguration(project));
+        final RunConfiguration myRemote = configurationFactory.createConfiguration(CONFIG_NAME, configurationFactory.createTemplateConfiguration(project));
         final RunnerAndConfigurationSettings configuration = runManager.createConfiguration(myRemote, configurationFactory);
         runManager.addConfiguration(configuration, true);
         configuration.setEditBeforeRun(false);
         configuration.setTemporary(false);
         final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
         for (RunConfiguration r : allConfigurationsList) {
-            if (r.getName().equals(remoteApp)) {
+            if (r.getName().equals(CONFIG_NAME)) {
                 final RemoteConfiguration s = (RemoteConfiguration) r;
                 s.HOST = "localhost";
                 s.PORT = "55555";
@@ -287,19 +291,22 @@ public class CopyHippoSharedFiles extends AnAction {
                 remoteConnection.setHostName("localhost");
                 remoteConnection.setAddress("8080");
                 remoteConnection.setUseSockets(true);
+
             }
+
+
         }
         runManager.setSelectedConfiguration(configuration);
 
 
     }
 
-    private boolean debugExists(final String app) {
+    private boolean debugExists(final Project project) {
         final RunManager runManager = RunManager.getInstance(project);
         final List<RunConfiguration> allConfigurationsList = runManager.getAllConfigurationsList();
 
         for (RunConfiguration r : allConfigurationsList) {
-            if (r.getName().equals(app)) {
+            if (r.getName().equals(CONFIG_NAME)) {
                 return true;
             }
 
@@ -307,6 +314,8 @@ public class CopyHippoSharedFiles extends AnAction {
         return false;
 
     }
+
+
 
     /*private void createDebugPort() {
         if (debugExists(HIPPO_TOMCAT)) {
