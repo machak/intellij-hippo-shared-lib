@@ -396,6 +396,7 @@ public class CopyHippoSharedFiles extends AnAction {
     private void showProjectRootPopup(final boolean silentMode, final String basePath, final File tomcatDirectory) {
         if (silentMode) {
             writeProjectFile(basePath, tomcatDirectory);
+            info("Following path will be used as project base:\n" + basePath);
             return;
         }
         final DialogBuilder dialogBuilder = new DialogBuilder(project);
