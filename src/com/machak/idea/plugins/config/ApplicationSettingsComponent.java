@@ -12,12 +12,12 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 
 
-public class ApplicationSettingsComponent extends BaseConfig implements ApplicationComponent, Configurable {
+public class ApplicationSettingsComponent extends BaseConfig implements BaseComponent, Configurable {
 
 
     private PluginConfiguration configPane;
