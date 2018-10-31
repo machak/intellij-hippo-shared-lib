@@ -6,6 +6,8 @@
 package com.machak.idea.plugins.config;
 
 
+import org.jetbrains.annotations.Nullable;
+
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -13,8 +15,6 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-
-import org.jetbrains.annotations.Nullable;
 
 
 @State(
@@ -33,6 +33,7 @@ public class StorageState implements PersistentStateComponent<StorageState> {
     public boolean copyLog4J;
     //@Attribute("showDialog")
     public boolean showDialog;
+    public boolean silentMode;
     //@Attribute("createProjectFile")
     public boolean createProjectFile;
 
@@ -128,6 +129,14 @@ public class StorageState implements PersistentStateComponent<StorageState> {
         this.createProjectFile = createProjectFile;
     }
 
+    public boolean isSilentMode() {
+        return silentMode;
+    }
+
+    public void setSilentMode(final boolean silentMode) {
+        this.silentMode = silentMode;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -152,6 +161,9 @@ public class StorageState implements PersistentStateComponent<StorageState> {
             return false;
         }
         if (copyLog4J != that.copyLog4J) {
+            return false;
+        }
+        if (silentMode != that.silentMode) {
             return false;
         }
         if (showDialog != that.showDialog) {
@@ -223,6 +235,7 @@ public class StorageState implements PersistentStateComponent<StorageState> {
     public static StorageState getInstance() {
         return ServiceManager.getService(StorageState.class);
     }
+
     @Nullable
     public static StorageState getInstance(Project project) {
         return ServiceManager.getService(project, StorageState.class);

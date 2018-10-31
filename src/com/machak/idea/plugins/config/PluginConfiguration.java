@@ -16,6 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Strings;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -30,9 +33,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.TextAccessor;
-
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.Nullable;
 
 public class PluginConfiguration extends BaseConfigurable {
     private JLabel label;
@@ -53,6 +53,7 @@ public class PluginConfiguration extends BaseConfigurable {
     private JCheckBox copyLog4j;
     private JCheckBox copyContentJar;
     private JCheckBox autoModifyProjectOutput;
+    private JCheckBox silentMode;
 
 
     public PluginConfiguration() {
@@ -128,6 +129,7 @@ public class PluginConfiguration extends BaseConfigurable {
         state.setLog4JDirectory(log4jLocation.getText());
         state.setDeleteAllJars(deleteAllJars.isSelected());
         state.setCopyOtherJars(copyOtherJars.isSelected());
+        state.setSilentMode(silentMode.isSelected());
         state.setShowDialog(showConfirmationDialog.isSelected());
         state.setCreateProjectFile(createProjectFile.isSelected());
         state.setTomcatDirectory(tomcatDirectory.getText());
@@ -141,6 +143,7 @@ public class PluginConfiguration extends BaseConfigurable {
         copyContentJar.setSelected(state.isCopyContentJar());
         autoModifyProjectOutput.setSelected(state.isAutoModifyProjectOutput());
         deleteAllJars.setSelected(state.isDeleteAllJars());
+        silentMode.setSelected(state.isSilentMode());
         copyOtherJars.setSelected(state.isCopyOtherJars());
         createProjectFile.setSelected(state.isCreateProjectFile());
         showConfirmationDialog.setSelected(state.isShowDialog());
@@ -161,6 +164,7 @@ public class PluginConfiguration extends BaseConfigurable {
                 || createProjectFile.isSelected() != state.isCreateProjectFile()
                 || copyLog4j.isSelected() != state.isCopyLog4J()
                 || copyContentJar.isSelected() != state.isCopyContentJar()
+                || silentMode.isSelected() != state.isSilentMode()
                 || autoModifyProjectOutput.isSelected() != state.isAutoModifyProjectOutput()
                 || copyOtherJars.isSelected() != state.isCopyOtherJars();
         if (changed) {

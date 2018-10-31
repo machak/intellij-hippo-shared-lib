@@ -12,7 +12,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,15 +36,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.maven.dom.MavenDomUtil;
-import org.jetbrains.idea.maven.dom.model.MavenDomParent;
-import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
-import org.jetbrains.idea.maven.dom.model.MavenDomProperties;
-import org.jetbrains.idea.maven.model.MavenArtifact;
-import org.jetbrains.idea.maven.model.MavenId;
-import org.jetbrains.idea.maven.project.*;
-import org.jetbrains.idea.maven.utils.MavenArtifactUtil;
-import org.jetbrains.idea.maven.utils.MavenUtil;
+import org.jetbrains.idea.maven.project.MavenProject;
+import org.jetbrains.idea.maven.project.MavenProjectReader;
+import org.jetbrains.idea.maven.project.MavenProjectReaderProjectLocator;
+import org.jetbrains.idea.maven.project.MavenProjectReaderResult;
+import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
@@ -59,8 +62,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.Result;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -76,17 +77,12 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.newvfs.impl.VirtualFileImpl;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
 import com.intellij.packaging.artifacts.ModifiableArtifact;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlTag;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.xml.DomUtil;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
 import com.machak.idea.plugins.config.BaseConfig;
 import com.machak.idea.plugins.config.ProjectSettingsComponent;
@@ -95,8 +91,6 @@ import com.machak.idea.plugins.model.Assembly;
 import com.machak.idea.plugins.model.DependencySet;
 import com.machak.idea.plugins.model.component.Component;
 import com.machak.idea.plugins.util.VersionUtils;
-
-import static com.intellij.ui.content.ContentManagerEvent.ContentOperation.add;
 
 
 public class CopyHippoSharedFiles extends AnAction {
@@ -253,7 +247,7 @@ public class CopyHippoSharedFiles extends AnAction {
                     return;
                 }
                 // create a popup:                
-                showProjectRootPopup(basePath, tomcatDirectory);
+                showProjectRootPopup(state.isSilentMode(), basePath, tomcatDirectory);
 
 
             }
@@ -399,8 +393,11 @@ public class CopyHippoSharedFiles extends AnAction {
                 + File.separator + "webapps" + File.separator + app;
     }
 
-    private void showProjectRootPopup(final String basePath, final File tomcatDirectory) {
-
+    private void showProjectRootPopup(final boolean silentMode, final String basePath, final File tomcatDirectory) {
+        if (silentMode) {
+            writeProjectFile(basePath, tomcatDirectory);
+            return;
+        }
         final DialogBuilder dialogBuilder = new DialogBuilder(project);
         dialogBuilder.setTitle("Create project file:");
         final JPanel simplePanel = new JPanel();
@@ -413,12 +410,13 @@ public class CopyHippoSharedFiles extends AnAction {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 // check if file exists and overwrite:
-                final String filePath = tomcatDirectory.getAbsolutePath() + File.separator + "bin" + File.separator + PROJECT_FILE;
-                createAndWriteFile(filePath, basePath);
+                writeProjectFile(basePath, tomcatDirectory);
 
 
                 dialogBuilder.getDialogWrapper().close(DialogWrapper.OK_EXIT_CODE);
             }
+
+
         };
         acceptAction.putValue(Action.NAME, "OK");
         dialogBuilder.addAction(acceptAction);
@@ -427,6 +425,10 @@ public class CopyHippoSharedFiles extends AnAction {
         dialogBuilder.showModal(true);
     }
 
+    private void writeProjectFile(final String basePath, final File tomcatDirectory) {
+        final String filePath = tomcatDirectory.getAbsolutePath() + File.separator + "bin" + File.separator + PROJECT_FILE;
+        createAndWriteFile(filePath, basePath);
+    }
 
     private static String readText(final File file) {
         try {
@@ -568,17 +570,17 @@ public class CopyHippoSharedFiles extends AnAction {
             builder.append(File.separator).append(part);
         }
         builder.append(File.separator)
-                .append(name) // subfolder
-                .append(File.separator)
-                .append(version) // version subfolder
-                .append(File.separator)
-                .append(name) // file name
-                .append('-')
-                .append(version)
-                .append(".jar");
+               .append(name) // subfolder
+               .append(File.separator)
+               .append(version) // version subfolder
+               .append(File.separator)
+               .append(name) // file name
+               .append('-')
+               .append(version)
+               .append(".jar");
         return builder.toString();
     }
-    
+
     private String getMavenRepository() {
         final String userHomeDir = System.getProperty("user.home");
         return userHomeDir + File.separator + ".m2" + File.separator + "repository";
@@ -712,7 +714,8 @@ public class CopyHippoSharedFiles extends AnAction {
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
-            @SuppressWarnings("unchecked") final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
+            @SuppressWarnings("unchecked")
+            final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
             final Assembly assembly = jaxbElement.getValue();
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
             if (dependencySets == null) {
@@ -730,7 +733,8 @@ public class CopyHippoSharedFiles extends AnAction {
         try {
             final JAXBContext context = JAXBContext.newInstance(Assembly.class, Component.class);
             final Unmarshaller unmarshaller = context.createUnmarshaller();
-            @SuppressWarnings("unchecked") final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
+            @SuppressWarnings("unchecked")
+            final JAXBElement<Assembly> jaxbElement = (JAXBElement<Assembly>) unmarshaller.unmarshal(distFile);
             final Assembly assembly = jaxbElement.getValue();
             final Assembly.DependencySets dependencySets = assembly.getDependencySets();
             if (dependencySets == null) {
@@ -745,7 +749,8 @@ public class CopyHippoSharedFiles extends AnAction {
                     final String fullPath = root.getAbsolutePath() + File.separator + descriptor;
                     final File file = new File(fullPath);
                     if (file.exists()) {
-                        @SuppressWarnings("unchecked") final JAXBElement<Component> jaxbComponent = (JAXBElement<Component>) unmarshaller.unmarshal(file);
+                        @SuppressWarnings("unchecked")
+                        final JAXBElement<Component> jaxbComponent = (JAXBElement<Component>) unmarshaller.unmarshal(file);
                         final Component component = jaxbComponent.getValue();
                         // we are only interested in dependencies....
                         final Component.DependencySets sets = component.getDependencySets();
