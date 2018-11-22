@@ -81,6 +81,7 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
 import com.intellij.packaging.artifacts.ModifiableArtifact;
+import com.intellij.packaging.impl.artifacts.ArtifactManagerImpl;
 import com.intellij.ui.BooleanTableCellRenderer;
 import com.intellij.ui.table.JBTable;
 import com.machak.idea.plugins.config.ApplicationSettingsComponent;
@@ -386,7 +387,7 @@ public class CopyHippoSharedFiles extends AnAction {
     }
 
     private void processMultiSiteStuff(final String outputFilePath, final Artifact artifact, final BaseConfig config, final Project project) {
-      
+        System.out.println("outputFilePath = " + outputFilePath);
     }
 
     @NotNull

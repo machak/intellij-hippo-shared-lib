@@ -8,7 +8,6 @@
   <name>Copy Hippo shared files</name>
   <version>1.2</version>
   <depends>org.jetbrains.idea.maven</depends>
-  <depends>Tomcat</depends>
   <vendor email="me@machak.com" url="https://github.com/machak/intellij-hippo-shared-lib">machak</vendor>
 
   <description><![CDATA[

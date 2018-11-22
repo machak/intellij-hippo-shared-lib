@@ -17,6 +17,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
@@ -83,7 +84,7 @@ public class PluginConfiguration extends BaseConfigurable {
     private void createDirListener(final TextFieldWithBrowseButton button, final boolean chooseFiles, final boolean chooseFolders) {
         final DocumentListener listener = new DocumentAdapter() {
             @Override
-            protected void textChanged(DocumentEvent documentEvent) {
+            protected void textChanged(@NotNull DocumentEvent documentEvent) {
                 button.getText();
             }
         };

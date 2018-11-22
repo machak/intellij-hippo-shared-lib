@@ -35,7 +35,7 @@ patchPluginXml{
 }
 
 intellij {
-    version '2017.3'
+    version '2018.2'
     pluginName 'intellij-hippo-shared-lib'
-    plugins = type == 'IU' ? ['maven', 'junit', 'maven-ext', 'uml', 'coverage'] : ['maven', 'junit']
+    plugins =  ['maven', 'junit',  'coverage']
 }
