@@ -12,7 +12,11 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Jar;
 import org.apache.tools.ant.types.FileSet;
 
+import com.intellij.openapi.diagnostic.Logger;
+
 public final class JarUtils {
+
+    private static final Logger log = Logger.getInstance(JarUtils.class);
     private JarUtils() {
     }
 
@@ -30,7 +34,7 @@ public final class JarUtils {
             jar.setDestFile(destination);
             jar.execute();
         } catch (BuildException e) {
-            System.out.println("Error building content JAR" + e);
+            log.error("Error building content JAR" + e);
         }
 
     }

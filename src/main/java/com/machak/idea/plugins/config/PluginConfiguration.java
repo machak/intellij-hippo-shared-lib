@@ -110,7 +110,7 @@ public class PluginConfiguration extends BaseConfigurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        System.out.println("label = " + label);
+        //System.out.println("label = " + label);
     }
 
     @Override

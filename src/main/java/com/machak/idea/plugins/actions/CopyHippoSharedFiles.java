@@ -370,21 +370,23 @@ public class CopyHippoSharedFiles extends AnAction {
                                 createWebDirPath(config, "cms")
                         );
 
-                    } else if (outputFilePath.endsWith(File.separator + "site")) {
-                        ((ModifiableArtifact) artifact).setOutputPath(
-                                createWebDirPath(config, "site")
-                        );
-
                     } else if (outputFilePath.endsWith(File.separator + "essentials")) {
                         ((ModifiableArtifact) artifact).setOutputPath(
                                 createWebDirPath(config, "essentials")
                         );
+                    } else {
+                        // oh boy, there we go again v13.
+                        processMultiSiteStuff(outputFilePath, artifact, config, project);
                     }
                 }
 
             }
 
         }
+    }
+
+    private void processMultiSiteStuff(final String outputFilePath, final Artifact artifact, final BaseConfig config, final Project project) {
+      
     }
 
     @NotNull

@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.3.12'
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+
+group 'com.machak'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service' }
+
+}
+
+dependencies {
+    
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "com.fasterxml.jackson.core:jackson-core:2.9.7"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.7'
+    compile 'org.apache.ant:ant:1.10.5'
+}
+patchPluginXml{
+    sinceBuild '163'
+    untilBuild '184'
+}
+
+intellij {
+    version '2017.3'
+    pluginName 'intellij-hippo-shared-lib'
+    plugins = type == 'IU' ? ['maven', 'junit', 'maven-ext', 'uml', 'coverage'] : ['maven', 'junit']
+}
